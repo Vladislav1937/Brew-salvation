@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Brew Salvation{% endblock %}</title>
+    <!-- Подключим простой Bootstrap для быстрой сетки (потом заменим на Tailwind) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00050A;
+            text-decoration: none;
+        }
+        .sidebar .nav-link {
+            color: #4a3b2c;
+        }
+        .sidebar .nav-link.active {
+            font-weight: bold;
+            color: #a0522d;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="logo" href="/">☕ Brew Salvation</a>
+            <div class="ms-auto">
+                <a href="/admin/" 
+                   class="btn btn-sm btn-outline-secondary" 
+                   target="_blank"
+                   title="Панель управления">
+                    🔐 Админ
+                </a>
+
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Боковая панель с категориями -->
+            <aside class="col-md-3 sidebar">
+                <h5>Темы</h5>
+                <ul class="nav flex-column">
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if not current_category %}active fw-bold{% endif %}" 
+                           href="{% url 'articles:article_list' %}">Все статьи</a>
+                    </li>
+                    {% for cat in categories %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if current_category and current_category.slug == cat.slug %}active fw-bold{% endif %}" 
+                           href="{% url 'articles:category_filter' cat.slug %}">
+                            {{ cat.name }}
+                        </a>
+                    </li>
+                    <hr class="my-3">
+    
+    
+                    {% endfor %}
+                </ul>  <!-- Закрываем список категорий -->
+                
+                <hr class="my-3">
+                
+                </a>
+
+                
+                <!-- Кнопки под категориями -->
+                <a href="{% url 'catalog:coffee_list' %}" class="btn btn-sm btn-outline-secondary w-100 mb-2">Каталог кофе</a>
+                <a href="{% url 'articles:brewing_calculator' %}" class="btn btn-sm btn-outline-secondary w-100">Калькулятор заваривания</a>
+            </aside>
+
+            <!-- Основной контент -->
+            <main class="col-md-9">
+                {% block content %}
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <footer class="bg-light text-center text-muted py-3 mt-5 border-top">
+         <!-- ========== БЛОК ПАГИНАЦИИ НА BOOTSTRAP 5 ========== -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Пагинация статей" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <!-- Первая страница -->
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo; Первая</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo; Первая</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">Назад</span>
+                </li>
+            {% endif %}
+
+            <!-- Номера страниц (отображаем 3 слева и 3 справа от текущей) -->
+            {% for num in page_obj.paginator.page_range %}
+                {% if num > page_obj.number|add:'-4' and num < page_obj.number|add:'4' %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+
+            <!-- Следующая страница -->
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперед</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Вперед</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">Последняя &raquo;</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    <!-- ========== КОНЕЦ БЛОКА ПАГИНАЦИИ ========== -->
+
+        <small>Brew Salvation — ваш гид в мир specialty coffee</small><br>
+        <small>© 2026 Использование любых материалов с данного ресурса возможно только после письменного согласия владельца авторских прав</small>
+    </footer>
+</body>
+</html>

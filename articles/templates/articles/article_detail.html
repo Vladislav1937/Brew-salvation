@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ article.title }} | Brew Salvation{% endblock %}
+
+{% block content %}
+<style>
+    .like-btn {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .like-btn:hover {
+        transform: scale(1.1);
+    }
+</style>
+
+<article>
+    <h1 class="mb-3">{{ article.title }}</h1>
+    
+    <!-- Строка с датой, категорией и лайками -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="text-muted small">
+            {{ article.published_date|date:"d.m.Y" }} | 
+            Категория: 
+            <a href="{% url 'articles:category_filter' article.category.slug %}">
+                {{ article.category.name }}
+            </a>
+        </div>
+        
+        <!-- Кнопка лайка -->
+        <div class="like-btn" id="likeBtn" data-slug="{{ article.slug }}">
+            {% if user_liked %}
+                <span style="font-size: 1.5rem;">❤️</span>
+            {% else %}
+                <span style="font-size: 1.5rem;">🤍</span>
+            {% endif %}
+            <span id="likesCount">{{ total_likes }}</span>
+        </div>
+    </div>
+
+    {% if article.image %}
+        <img src="{{ article.image.url }}" class="img-fluid rounded mb-4" alt="{{ article.title }}">
+    {% endif %}
+
+    <!-- Содержимое статьи -->
+    <div class="article-content">
+        {{ article.content|linebreaks|safe }}
+    </div>
+</article>
+
+{% if article.images.all %}
+<div class="row mt-4">
+    <h5>Фотогалерея</h5>
+    {% for img in article.images.all %}
+    <div class="col-md-4 mb-3">
+        <img src="{{ img.image.url }}" class="img-fluid rounded" alt="{{ img.caption|default:'Фото' }}">
+        {% if img.caption %}<p class="small text-muted mt-1">{{ img.caption }}</p>{% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Блок комментариев -->
+<div class="mt-5">
+    <h4>💬 Комментарии ({{ comments|length }})</h4>
+    
+    <!-- Форма добавления комментария -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Оставить комментарий</h5>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <input type="text" name="author_name" class="form-control" placeholder="Ваше имя" required>
+                </div>
+                <div class="mb-3">
+                    <textarea name="comment_text" class="form-control" rows="3" placeholder="Ваш комментарий..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+            <small class="text-muted">Все комментарии проходят модерацию перед публикацией</small>
+        </div>
+    </div>
+    
+    <!-- Список комментариев -->
+    {% if comments %}
+        {% for comment in comments %}
+        <div class="card mb-2">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <strong>{{ comment.author_name }}</strong>
+                    <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
+                </div>
+                <p class="mt-2 mb-0">{{ comment.text|linebreaks }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center text-muted p-4 bg-light rounded">
+            <p>Пока нет комментариев. Будьте первым!</p>
+        </div>
+    {% endif %}
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'articles:article_list' %}" class="btn btn-outline-secondary">← Назад к статьям</a>
+</div>
+
+<script>
+// Функция для получения CSRF токена из cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// AJAX для лайков
+
+<script>
+    // AJAX для лайков
+    <!-- Замените блок с кнопкой лайка на это -->
+<div>
+    <form method="post" action="{% url 'articles:like_article' article.slug %}" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm {% if user_liked %}btn-danger{% else %}btn-outline-danger{% endif %}">
+            ❤️ <span>{{ total_likes }}</span>
+        </button>
+    </form>
+</div>
+     
+{% endblock %}

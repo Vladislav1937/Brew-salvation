@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ coffee.name }} |  {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        {% if coffee.image %}
+        <img src="{{ coffee.image.url }}" class="img-fluid rounded" alt="{{ coffee.name }}">
+        {% endif %}
+    </div>
+    <div class="col-md-6">
+        <h1>{{ coffee.name }}</h1>
+        <p><strong>Происхождение:</strong> {{ coffee.origin.name }}</p>
+        <p><strong>Обработка:</strong> {{ coffee.processing|default:"не указано" }}</p>
+        <p><strong>Вкусовые ноты:</strong> {{ coffee.tasting_notes }}</p>
+        <p>{{ coffee.description|linebreaks }}</p>
+        {% if coffee.price %}
+        <p><strong>Цена:</strong> {{ coffee.price }} ₽</p>
+        {% endif %}
+        <a href="{% url 'catalog:coffee_list' %}" class="btn btn-secondary">← Назад в каталог</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Каталог кофе | Brew Salvation{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Каталог specialty coffee</h1>
+<div class="row">
+    {% for coffee in page_obj %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            {% if coffee.image %}
+            <img src="{{ coffee.image.url }}" class="card-img-top" alt="{{ coffee.name }}" style="height: 200px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ coffee.name }}</h5>
+                <p class="card-text text-muted">{{ coffee.origin.name }}</p>
+                <p class="card-text">{{ coffee.tasting_notes|truncatewords:10 }}</p>
+                <a href="{{ coffee.get_absolute_url }}" class="btn btn-outline-primary btn-sm">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>В каталоге пока нет кофе. Добавьте через админ-панель.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}
