@@ -29,17 +29,14 @@ ALLOWED_HOSTS = ['.railway.app', 'localhost', '127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://peso-musket-good.ngrok-free.dev',
-    'http://peso-musket-good.ngrok-free.dev',  # if you need http too
-      # Временно для Railway
-# Или конкретно: ALLOWED_HOSTS = ['.railway.app', 'localhost']
-]
-
-# Application definition
+    'http://peso-musket-good.ngrok-free.dev',
+    'https://brew-salvation-production.up.railway.app',
+    'https://*.railway.app',
 
 INSTALLED_APPS = [
     'catalog',
     'articles',
-    'django.contrib.admin',
+    'django.contrib.admin'
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
