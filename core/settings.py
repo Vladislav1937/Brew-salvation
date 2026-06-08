@@ -32,16 +32,16 @@ CSRF_TRUSTED_ORIGINS = [
     'https://brew-salvation-production.up.railway.app',
     'https://*.railway.app',
 ]
+
 INSTALLED_APPS = [
     'catalog',
     'articles',
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.admin',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-     # 'django_extensions',  # ← ЗАКОММЕНТИРОВАНО
+    'django.contrib.staticfiles',    
 ]
 
 MIDDLEWARE = [
