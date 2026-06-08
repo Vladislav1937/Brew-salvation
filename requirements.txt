@@ -1,6 +1,5 @@
 asgiref==3.11.1
 Django==6.0.4
-django-extensions==4.1
 django-tailwind==4.4.2
 graphviz==0.21
 pillow==12.2.0
