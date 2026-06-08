@@ -25,11 +25,13 @@ SECRET_KEY = 'django-insecure-edj!x2b$+z13+*hhn76j5qfmb(zl7lp51-e$i3dmo^a7bv62ec
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['peso-musket-good.ngrok-free.dev',
-                 '127.0.0.1']
+ALLOWED_HOSTS = ['*']
+
 CSRF_TRUSTED_ORIGINS = [
     'https://peso-musket-good.ngrok-free.dev',
     'http://peso-musket-good.ngrok-free.dev',  # if you need http too
+      # Временно для Railway
+# Или конкретно: ALLOWED_HOSTS = ['.railway.app', 'localhost']
 ]
 
 # Application definition
