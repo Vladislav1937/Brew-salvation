@@ -28,11 +28,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['.railway.app', 'localhost', '127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://peso-musket-good.ngrok-free.dev',
-    'http://peso-musket-good.ngrok-free.dev',
+    
     'https://brew-salvation-production.up.railway.app',
     'https://*.railway.app',
-
+]
 INSTALLED_APPS = [
     'catalog',
     'articles',
