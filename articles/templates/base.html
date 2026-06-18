@@ -5,145 +5,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Brew Salvation{% endblock %}</title>
-    <!-- Подключим простой Bootstrap для быстрой сетки (потом заменим на Tailwind) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS (сборка через django-tailwind-cli) -->
+    {% tailwind_css %}
+    <!-- Дополнительный кастомный стиль для специфичных элементов -->
     <style>
-        .logo {
+        .logo-text {
             font-size: 1.8rem;
-            font-weight: bold;
-            color: #00050A;
+            font-weight: 700;
+            color: #1a1a1a;
             text-decoration: none;
         }
-        .sidebar .nav-link {
+        .sidebar-link {
             color: #4a3b2c;
+            transition: color 0.2s;
         }
-        .sidebar .nav-link.active {
-            font-weight: bold;
+        .sidebar-link:hover {
+            color: #a0522d;
+        }
+        .sidebar-link.active {
+            font-weight: 700;
             color: #a0522d;
         }
     </style>
-    <!-- Подключаем Tailwind (с префиксом tw-, чтобы не конфликтовать с Bootstrap) -->
-    {% tailwind_css %}
 </head>
-<body>
-    <nav class="navbar navbar-light bg-light border-bottom">
-        <div class="container">
-            <a class="logo" href="/">☕ Brew Salvation</a>
-            <div class="ms-auto">
-                <a href="/admin/" 
-                   class="btn btn-sm btn-outline-secondary" 
-                   target="_blank"
-                   title="Панель управления">
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+
+    <!-- ==================== НАВИГАЦИЯ ==================== -->
+    <nav class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Логотип -->
+                <a href="/" class="logo-text flex items-center gap-2">
+                    <span class="text-2xl">☕</span> Brew Salvation
+                </a>
+                <!-- Кнопка админки -->
+                <a href="/admin/" target="_blank" 
+                   class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-accent transition">
                     🔐 Админ
                 </a>
-
+            </div>
         </div>
     </nav>
 
-    <div class="container my-4">
-        <div class="row">
-            <!-- Боковая панель с категориями -->
-            <aside class="col-md-3 sidebar">
-                <h5>Темы</h5>
-                <ul class="nav flex-column">
+    <!-- ==================== ОСНОВНАЯ СЕТКА ==================== -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- ====== БОКОВАЯ ПАНЕЛЬ ====== -->
+            <aside class="w-full md:w-64 lg:w-72 flex-shrink-0">
+                <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 sticky top-4">
+                    <h5 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Темы</h5>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="{% url 'articles:article_list' %}" 
+                               class="block px-3 py-2 rounded-md text-sm font-medium sidebar-link {% if not current_category %}active{% endif %}">
+                                Все статьи
+                            </a>
+                        </li>
+                        {% for cat in categories %}
+                        <li>
+                            <a href="{% url 'articles:category_filter' cat.slug %}" 
+                               class="block px-3 py-2 rounded-md text-sm font-medium sidebar-link {% if current_category and current_category.slug == cat.slug %}active{% endif %}">
+                                {{ cat.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
 
-                    <li class="nav-item">
-                        <a class="nav-link {% if not current_category %}active fw-bold{% endif %}" 
-                           href="{% url 'articles:article_list' %}">Все статьи</a>
-                    </li>
-                    {% for cat in categories %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if current_category and current_category.slug == cat.slug %}active fw-bold{% endif %}" 
-                           href="{% url 'articles:category_filter' cat.slug %}">
-                            {{ cat.name }}
+                    <hr class="my-5 border-gray-200">
+
+                    <div class="space-y-2">
+                        <a href="{% url 'catalog:coffee_list' %}" 
+                           class="block w-full text-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
+                            Каталог кофе
                         </a>
-                    </li>
-                    <hr class="my-3">
-    
-    
-                    {% endfor %}
-                </ul>  <!-- Закрываем список категорий -->
-                
-                <hr class="my-3">
-                
-                </a>
-
-                
-                <!-- Кнопки под категориями -->
-                <a href="{% url 'catalog:coffee_list' %}" class="btn btn-sm btn-outline-secondary w-100 mb-2">Каталог кофе</a>
-                <a href="{% url 'articles:brewing_calculator' %}" class="btn btn-sm btn-outline-secondary w-100">Калькулятор заваривания</a>
+                        <a href="{% url 'articles:brewing_calculator' %}" 
+                           class="block w-full text-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
+                            Калькулятор заваривания
+                        </a>
+                    </div>
+                </div>
             </aside>
 
-            <!-- Основной контент -->
-            <main class="col-md-9">
+            <!-- ====== ОСНОВНОЙ КОНТЕНТ ====== -->
+            <main class="flex-1 min-w-0">
                 {% block content %}
                 {% endblock %}
             </main>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <footer class="bg-light text-center text-muted py-3 mt-5 border-top">
-         <!-- ========== БЛОК ПАГИНАЦИИ НА BOOTSTRAP 5 ========== -->
-    {% if page_obj.has_other_pages %}
-    <nav aria-label="Пагинация статей" class="mt-4">
-        <ul class="pagination justify-content-center">
-            <!-- Первая страница -->
-            {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page=1">&laquo; Первая</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a>
-                </li>
-            {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">&laquo; Первая</span>
-                </li>
-                <li class="page-item disabled">
-                    <span class="page-link">Назад</span>
-                </li>
-            {% endif %}
-
-            <!-- Номера страниц (отображаем 3 слева и 3 справа от текущей) -->
-            {% for num in page_obj.paginator.page_range %}
-                {% if num > page_obj.number|add:'-4' and num < page_obj.number|add:'4' %}
-                    {% if page_obj.number == num %}
-                        <li class="page-item active" aria-current="page">
-                            <span class="page-link">{{ num }}</span>
-                        </li>
-                    {% else %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                        </li>
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
-
-            <!-- Следующая страница -->
-            {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперед</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a>
-                </li>
-            {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">Вперед</span>
-                </li>
-                <li class="page-item disabled">
-                    <span class="page-link">Последняя &raquo;</span>
-                </li>
-            {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
-    <!-- ========== КОНЕЦ БЛОКА ПАГИНАЦИИ ========== -->
-
-        <small>Brew Salvation — ваш гид в мир specialty coffee</small><br>
-        <small>© 2026 Использование любых материалов с данного ресурса возможно только после письменного согласия владельца авторских прав</small>
+    <!-- ==================== ФУТЕР (без пагинации) ==================== -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-center text-sm text-gray-500 space-y-1">
+                <p>Brew Salvation — ваш гид в мир specialty coffee</p>
+                <p class="text-xs">© 2026 Использование любых материалов с данного ресурса возможно только после письменного согласия владельца авторских прав</p>
+            </div>
+        </div>
     </footer>
+
 </body>
 </html>

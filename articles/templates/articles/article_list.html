@@ -3,59 +3,106 @@
 {% block title %}Статьи - Brew Salvation{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Статьи о кофе</h1>
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Статьи о кофе</h1>
 
-{% if articles %}
-    <div class="row">
-        {% for article in articles %}
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
+    {% if articles %}
+        <!-- Сетка карточек: на мобилке 1 колонка, на md 2, на lg 3 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for article in articles %}
+                <article class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition duration-200 flex flex-col">
+                    <!-- Изображение -->
                     {% if article.image %}
-                        <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}" style="height: 200px; object-fit: cover;">
+                        <img src="{{ article.image.url }}" 
+                             alt="{{ article.title }}" 
+                             class="w-full h-48 object-cover">
                     {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ article.title }}</h5>
-                        <p class="card-text">{{ article.content|truncatewords:30|safe }}</p>
-                        <a href="{% url 'articles:article_detail' article.slug %}" class="btn btn-outline-primary btn-sm">Читать →</a>
+                    
+                    <!-- Тело карточки -->
+                    <div class="p-5 flex flex-col flex-grow">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-2">
+                            <a href="{% url 'articles:article_detail' article.slug %}" 
+                               class="hover:text-brand-accent transition">
+                                {{ article.title }}
+                            </a>
+                        </h2>
+                        <p class="text-gray-600 text-sm leading-relaxed flex-grow">
+                            {{ article.content|truncatewords:30|safe }}
+                        </p>
+                        <div class="mt-4 flex items-center justify-between">
+                            <a href="{% url 'articles:article_detail' article.slug %}" 
+                               class="inline-flex items-center text-sm font-medium text-brand-accent hover:underline">
+                                Читать →
+                            </a>
+                            <div class="flex items-center gap-3 text-sm text-gray-500">
+                                <span>❤️ {{ article.total_likes }}</span>
+                                <span>💬 {{ article.comments.count }}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-footer text-muted small d-flex justify-content-between align-items-center">
-                        <span>{{ article.published_date|date:"d E Y" }}</span>
-                        <span>
-                            ❤️ {{ article.total_likes }} | 💬 {{ article.comments.count }}
-                        </span>
+                    
+                    <!-- Футер карточки (дата) -->
+                    <div class="px-5 py-3 bg-gray-50 border-t border-gray-100 text-xs text-gray-400">
+                        {{ article.published_date|date:"d E Y" }}
                     </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-
-    {% if page_obj.has_other_pages %}
-    <nav aria-label="Пагинация">
-        <ul class="pagination justify-content-center">
-            {% if page_obj.has_previous %}
-                <li class="page-item"><a class="page-link" href="?page=1">&laquo; Первая</a></li>
-                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a></li>
-            {% endif %}
-
-            {% for num in page_obj.paginator.page_range %}
-                {% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
-                    {% if page_obj.number == num %}
-                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                    {% else %}
-                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-                    {% endif %}
-                {% endif %}
+                </article>
             {% endfor %}
+        </div>
 
-            {% if page_obj.has_next %}
-                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперед</a></li>
-                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a></li>
-            {% endif %}
-        </ul>
-    </nav>
+        <!-- ====== ПАГИНАЦИЯ ====== -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Пагинация" class="mt-8">
+            <ul class="flex justify-center items-center gap-1 flex-wrap">
+                <!-- Первая -->
+                {% if page_obj.has_previous %}
+                    <li>
+                        <a href="?page=1" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">
+                            &laquo; Первая
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">
+                            Назад
+                        </a>
+                    </li>
+                {% else %}
+                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed">&laquo; Первая</span></li>
+                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed">Назад</span></li>
+                {% endif %}
+
+                <!-- Номера страниц (показываем 2 слева и 2 справа) -->
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        {% if page_obj.number == num %}
+                            <li><span class="px-4 py-2 rounded-md text-sm font-bold text-white bg-brand-accent border border-brand-accent">{{ num }}</span></li>
+                        {% else %}
+                            <li><a href="?page={{ num }}" class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">{{ num }}</a></li>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Следующая -->
+                {% if page_obj.has_next %}
+                    <li>
+                        <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">
+                            Вперед
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page={{ page_obj.paginator.num_pages }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">
+                            Последняя &raquo;
+                        </a>
+                    </li>
+                {% else %}
+                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed">Вперед</span></li>
+                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed">Последняя &raquo;</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    {% else %}
+        <div class="bg-blue-50 border border-blue-200 text-blue-700 px-6 py-4 rounded-lg">
+            Пока нет ни одной статьи. Загляните позже!
+        </div>
     {% endif %}
-
-{% else %}
-    <div class="alert alert-info">Пока нет ни одной статьи. Загляните позже!</div>
-{% endif %}
 {% endblock %}
