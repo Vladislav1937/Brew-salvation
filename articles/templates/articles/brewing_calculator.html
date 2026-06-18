@@ -7,188 +7,223 @@
 <style>
     .method-card {
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         border: 2px solid transparent;
     }
     .method-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
     }
     .method-card.selected {
         border-color: #a0522d;
-        background-color: #fff5f0;
+        background-color: #fdf6f0;
+    }
+    .dark .method-card.selected {
+        background-color: #2a1f18;
+        border-color: #d4a574;
     }
     .slider-value {
-        font-size: 1.2rem;
-        font-weight: bold;
+        font-weight: 700;
         color: #a0522d;
+    }
+    .dark .slider-value {
+        color: #d4a574;
     }
     .result-card {
         background: linear-gradient(135deg, #f5e6d3 0%, #e8d5c0 100%);
-        border-radius: 15px;
-        padding: 20px;
-        margin-top: 20px;
+        border-radius: 1rem;
+        padding: 1.5rem;
+    }
+    .dark .result-card {
+        background: linear-gradient(135deg, #2a1f18 0%, #1f1610 100%);
     }
     .coffee-amount {
-        font-size: 2rem;
-        font-weight: bold;
+        font-size: 2.5rem;
+        font-weight: 700;
         color: #2c1810;
     }
+    .dark .coffee-amount {
+        color: #f5e6d3;
+    }
     .water-amount {
-        font-size: 1.5rem;
+        font-size: 2rem;
+        font-weight: 600;
         color: #6d4c41;
+    }
+    .dark .water-amount {
+        color: #d4a574;
     }
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
     .fade-in {
-        animation: fadeIn 0.5s ease;
+        animation: fadeIn 0.4s ease;
+    }
+    input[type="range"] {
+        accent-color: #a0522d;
+        height: 6px;
+        background: #e5e7eb;
+        border-radius: 3px;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    .dark input[type="range"] {
+        background: #4b5563;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #a0522d;
+        cursor: pointer;
+        border: 2px solid white;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .dark input[type="range"]::-webkit-slider-thumb {
+        background: #d4a574;
+        border-color: #1f2937;
     }
 </style>
 
-<div class="container mt-4">
-    <h1 class="mb-4 text-center">☕ Калькулятор заваривания</h1>
-    
-    <div class="row">
-        <div class="col-md-5">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Выберите способ заваривания:</h5>
-                    <div class="row g-3 mb-4">
-                        <div class="col-6">
-                            <div class="method-card card text-center p-3" data-method="v60">
-                                <div class="card-body p-2">
-                                    <div style="font-size: 2rem;">☕</div>
-                                    <strong>V60</strong>
-                                    <small class="text-muted d-block">Воронка</small>
-                                </div>
-                            </div>
+<div class="max-w-7xl mx-auto px-4 py-6">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">☕ Калькулятор заваривания</h1>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Левая колонка: выбор метода и настройки -->
+        <div class="lg:w-2/5">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Выберите способ заваривания:</h2>
+
+                <!-- Сетка методов (2 колонки) -->
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <div class="method-card bg-white dark:bg-gray-700 rounded-xl p-3 text-center border border-gray-200 dark:border-gray-600 hover:shadow-md transition" data-method="v60">
+                        <div class="text-3xl">☕</div>
+                        <div class="font-medium text-gray-800 dark:text-gray-200">V60</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Воронка</div>
+                    </div>
+                    <div class="method-card bg-white dark:bg-gray-700 rounded-xl p-3 text-center border border-gray-200 dark:border-gray-600 hover:shadow-md transition" data-method="french">
+                        <div class="text-3xl">🔮</div>
+                        <div class="font-medium text-gray-800 dark:text-gray-200">Френч-пресс</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Плунжер</div>
+                    </div>
+                    <div class="method-card bg-white dark:bg-gray-700 rounded-xl p-3 text-center border border-gray-200 dark:border-gray-600 hover:shadow-md transition" data-method="aeropress">
+                        <div class="text-3xl">💉</div>
+                        <div class="font-medium text-gray-800 dark:text-gray-200">Аэропресс</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Поршневой</div>
+                    </div>
+                    <div class="method-card bg-white dark:bg-gray-700 rounded-xl p-3 text-center border border-gray-200 dark:border-gray-600 hover:shadow-md transition" data-method="chemex">
+                        <div class="text-3xl">⚗️</div>
+                        <div class="font-medium text-gray-800 dark:text-gray-200">Chemex</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Колба</div>
+                    </div>
+                    <!-- НОВЫЕ МЕТОДЫ -->
+                    <div class="method-card bg-white dark:bg-gray-700 rounded-xl p-3 text-center border border-gray-200 dark:border-gray-600 hover:shadow-md transition" data-method="moka">
+                        <div class="text-3xl">🔥</div>
+                        <div class="font-medium text-gray-800 dark:text-gray-200">Гейзер</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Мока-пот</div>
+                    </div>
+                    <div class="method-card bg-white dark:bg-gray-700 rounded-xl p-3 text-center border border-gray-200 dark:border-gray-600 hover:shadow-md transition" data-method="cezve">
+                        <div class="text-3xl">🏺</div>
+                        <div class="font-medium text-gray-800 dark:text-gray-200">Турка</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Джезва</div>
+                    </div>
+                    <div class="method-card bg-white dark:bg-gray-700 rounded-xl p-3 text-center border border-gray-200 dark:border-gray-600 hover:shadow-md transition" data-method="cupping">
+                        <div class="text-3xl">🥄</div>
+                        <div class="font-medium text-gray-800 dark:text-gray-200">Каппинг</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Чашка</div>
+                    </div>
+                </div>
+
+                <!-- Настройки (появляются после выбора метода) -->
+                <div id="settings" class="hidden">
+                    <hr class="border-gray-200 dark:border-gray-700 my-4">
+
+                    <!-- Вода (мл) -->
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <span>Вода (мл)</span>
+                            <span id="water-value" class="slider-value">250</span>
                         </div>
-                        <div class="col-6">
-                            <div class="method-card card text-center p-3" data-method="french">
-                                <div class="card-body p-2">
-                                    <div style="font-size: 2rem;">🔮</div>
-                                    <strong>Френч-пресс</strong>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="method-card card text-center p-3" data-method="aeropress">
-                                <div class="card-body p-2">
-                                    <div style="font-size: 2rem;">💉</div>
-                                    <strong>Аэропресс</strong>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="method-card card text-center p-3" data-method="chemex">
-                                <div class="card-body p-2">
-                                    <div style="font-size: 2rem;">⚗️</div>
-                                    <strong>Chemex</strong>
-                                </div>
-                            </div>
-                        </div>
+                        <input type="range" id="water" class="w-full" min="100" max="800" step="10" value="250">
                     </div>
 
-                    <div id="calculator-form" style="display: none;">
-                        <hr>
-                        <h6>Количество чашек:</h6>
-                        <div class="mb-3">
-                            <input type="range" id="cups" class="form-range" min="0.5" max="4" step="0.5" value="1">
-                            <div class="text-center mt-2">
-                                <span id="cups-value" class="slider-value">1</span> чашка
-                            </div>
+                    <!-- Кофе (г) -->
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <span>Кофе (г)</span>
+                            <span id="coffee-value" class="slider-value">15</span>
                         </div>
+                        <input type="range" id="coffee" class="w-full" min="5" max="60" step="1" value="15">
+                    </div>
 
-                        <h6>Кофе (граммы):</h6>
-                        <div class="mb-3">
-                            <input type="range" id="coffee" class="form-range" min="5" max="40" step="1" value="15">
-                            <div class="text-center mt-2">
-                                <span id="coffee-value" class="slider-value">15</span> г
-                            </div>
-                        </div>
-
-                        <div class="alert alert-info">
-                            <small>💡 Совет: Стандартная пропорция для выбранного метода будет применена автоматически</small>
-                        </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 text-center mt-2">
+                        💡 Изменяйте воду и кофе – пропорция пересчитается автоматически
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-7">
-            <div id="result" style="display: none;" class="fade-in">
-                <div class="result-card text-center">
-                    <h3 id="method-name"></h3>
-                    
-                    <div class="row mt-4">
-                        <div class="col-6">
-                            <div class="coffee-amount" id="coffee-result">0</div>
-                            <div>грамм кофе</div>
-                            <small class="text-muted">☕ кофе</small>
-                        </div>
-                        <div class="col-6">
-                            <div class="water-amount" id="water-result">0</div>
-                            <div>миллилитров воды</div>
-                            <small class="text-muted">💧 воды</small>
-                        </div>
-                    </div>
-
-                    <hr class="my-3">
-
-                    <div class="row text-start">
-                        <div class="col-6">
-                            <strong>Помол:</strong>
-                            <div id="grind" class="text-muted"></div>
-                        </div>
-                        <div class="col-6">
-                            <strong>Температура:</strong>
-                            <div id="temp" class="text-muted"></div>
-                        </div>
-                        <div class="col-6 mt-2">
-                            <strong>Время:</strong>
-                            <div id="time" class="text-muted"></div>
-                        </div>
-                        <div class="col-6 mt-2">
-                            <strong>Пропорция:</strong>
-                            <div id="ratio" class="text-muted"></div>
-                        </div>
-                    </div>
-
-                    <div class="mt-3 p-2 bg-white rounded">
-                        <h6>📋 Инструкция:</h6>
-                        <ul class="text-start small" id="instructions">
-                            <li>Подготовьте свежеобжаренный кофе</li>
-                            <li>Смолите зерна подходящего помола</li>
-                            <li>Вскипятите воду и остудите до нужной температуры</li>
-                        </ul>
-                    </div>
-                </div>
+        <!-- Правая колонка: результат -->
+        <div class="lg:w-3/5">
+            <div id="no-method" class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center text-gray-400 dark:text-gray-500">
+                <div class="text-5xl mb-4">👈</div>
+                <p class="text-lg">Выберите способ заваривания слева</p>
             </div>
 
-            <div id="no-method" class="text-center text-muted p-5">
-                <div style="font-size: 3rem;">👇</div>
-                <p>Выберите способ заваривания слева</p>
+            <div id="result" class="hidden fade-in">
+                <div class="result-card shadow-lg">
+                    <h3 id="method-name" class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-4"></h3>
+
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div>
+                            <div class="coffee-amount" id="coffee-result">0</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-300">грамм кофе</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">☕ кофе</div>
+                        </div>
+                        <div>
+                            <div class="water-amount" id="water-result">0</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-300">миллилитров воды</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">💧 воды</div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 border-gray-300 dark:border-gray-600">
+
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                        <div><span class="font-semibold text-gray-700 dark:text-gray-200">Помол:</span> <span id="grind" class="text-gray-600 dark:text-gray-300"></span></div>
+                        <div><span class="font-semibold text-gray-700 dark:text-gray-200">Температура:</span> <span id="temp" class="text-gray-600 dark:text-gray-300"></span></div>
+                        <div><span class="font-semibold text-gray-700 dark:text-gray-200">Время:</span> <span id="time" class="text-gray-600 dark:text-gray-300"></span></div>
+                        <div><span class="font-semibold text-gray-700 dark:text-gray-200">Пропорция:</span> <span id="ratio" class="text-gray-600 dark:text-gray-300"></span></div>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <h6 class="font-semibold text-gray-800 dark:text-gray-200 text-sm">📋 Инструкция:</h6>
+                        <ul id="instructions" class="text-sm text-gray-600 dark:text-gray-300 space-y-1 mt-1 list-disc list-inside"></ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    const data = {
+    // Данные по методам (расширенные)
+    const methodsData = {
         v60: {
             name: "V60 (воронка)",
             grind: "Средний (как морская соль)",
             temp: "92–96 °C",
             time: "2–3 минуты",
-            ratio: 16, // 1:16
+            ratio: 16,
             instructions: [
-                "1. Промойте фильтр горячей водой",
-                "2. Насыпьте кофе в конус",
-                "3. Залейте 50 мл воды и дайте настояться 30 секунд (блуминг)",
-                "4. Постепенно заливайте оставшуюся воду круговыми движениями",
-                "5. Дождитесь полного стекания воды"
+                "Промойте фильтр горячей водой",
+                "Насыпьте кофе в конус",
+                "Залейте 50 мл воды, дайте настояться 30 сек (блуминг)",
+                "Постепенно заливайте оставшуюся воду круговыми движениями",
+                "Дождитесь полного стекания воды"
             ]
         },
         french: {
@@ -198,11 +233,11 @@
             time: "4 минуты",
             ratio: 15,
             instructions: [
-                "1. Насыпьте кофе во френч-пресс",
-                "2. Залейте водой и перемешайте",
-                "3. Накройте крышкой и оставьте на 4 минуты",
-                "4. Медленно опустите поршень",
-                "5. Сразу перелейте кофе в чашку"
+                "Насыпьте кофе во френч-пресс",
+                "Залейте водой и перемешайте",
+                "Накройте крышкой, оставьте на 4 минуты",
+                "Медленно опустите поршень",
+                "Сразу перелейте кофе в чашку"
             ]
         },
         aeropress: {
@@ -212,11 +247,11 @@
             time: "1–2 минуты",
             ratio: 12,
             instructions: [
-                "1. Установите фильтр в крышку и смочите его",
-                "2. Насыпьте кофе в цилиндр",
-                "3. Залейте водой и перемешайте 10 секунд",
-                "4. Вставьте поршень и подождите 60 секунд",
-                "5. Медленно нажмите на поршень"
+                "Установите фильтр в крышку, смочите его",
+                "Насыпьте кофе в цилиндр",
+                "Залейте водой, перемешайте 10 сек",
+                "Вставьте поршень, подождите 60 сек",
+                "Медленно нажмите на поршень"
             ]
         },
         chemex: {
@@ -226,87 +261,168 @@
             time: "3–4 минуты",
             ratio: 17,
             instructions: [
-                "1. Поместите фильтр в Chemex и промойте его",
-                "2. Насыпьте кофе и сделайте углубление в центре",
-                "3. Залейте 100 мл воды, дайте настояться 45 секунд",
-                "4. Постепенно заливайте воду, поддерживая уровень",
-                "5. Дождитесь полного стекания воды"
+                "Поместите фильтр в Chemex, промойте его",
+                "Насыпьте кофе, сделайте углубление в центре",
+                "Залейте 100 мл воды, дайте настояться 45 сек",
+                "Постепенно заливайте воду, поддерживая уровень",
+                "Дождитесь полного стекания воды"
+            ]
+        },
+        // НОВЫЕ МЕТОДЫ
+        moka: {
+            name: "Гейзерная кофеварка (Moka Pot)",
+            grind: "Средне-мелкий (мельче, чем для V60)",
+            temp: "80–90 °C (вода в резервуаре)",
+            time: "3–5 минут",
+            ratio: 10,
+            instructions: [
+                "Налейте горячую воду в нижний резервуар до клапана",
+                "Насыпьте кофе в корзину, не утрамбовывая",
+                "Плотно закрутите верхнюю часть",
+                "Поставьте на средний огонь",
+                "Снимите, когда кофе перестанет выходить с шумом"
+            ]
+        },
+        cezve: {
+            name: "Турка (джезва)",
+            grind: "Очень мелкий (как мука)",
+            temp: "93–95 °C (в процессе варки)",
+            time: "3–5 минут",
+            ratio: 9,
+            instructions: [
+                "Насыпьте кофе в турку",
+                "Добавьте холодную воду и перемешайте",
+                "Нагревайте на медленном огне",
+                "Как только появится пенка – снимите, дайте осесть",
+                "Повторите 2–3 раза, затем разлейте в чашки"
+            ]
+        },
+        cupping: {
+            name: "Каппинг (чашка)",
+            grind: "Средне-крупный",
+            temp: "94–96 °C",
+            time: "4–5 минут",
+            ratio: 18,
+            instructions: [
+                "Насыпьте кофе в чашку",
+                "Залейте водой, включите таймер",
+                "Через 4 минуты разбейте корку и перемешайте",
+                "Снимите пену ложкой",
+                "Оцените аромат и вкус, пробуя ложкой"
             ]
         }
     };
 
     let currentMethod = null;
-    let currentCups = 1;
+    let currentWater = 250;
     let currentCoffee = 15;
+    let currentRatio = 16; // будет обновляться
+
+    // DOM-элементы
+    const settingsDiv = document.getElementById('settings');
+    const noMethodDiv = document.getElementById('no-method');
+    const resultDiv = document.getElementById('result');
+
+    const waterSlider = document.getElementById('water');
+    const coffeeSlider = document.getElementById('coffee');
+    const waterValue = document.getElementById('water-value');
+    const coffeeValue = document.getElementById('coffee-value');
+
+    const methodNameEl = document.getElementById('method-name');
+    const coffeeResult = document.getElementById('coffee-result');
+    const waterResult = document.getElementById('water-result');
+    const grindEl = document.getElementById('grind');
+    const tempEl = document.getElementById('temp');
+    const timeEl = document.getElementById('time');
+    const ratioEl = document.getElementById('ratio');
+    const instructionsList = document.getElementById('instructions');
 
     // Обработчики слайдеров
-    document.getElementById('cups').addEventListener('input', function() {
-        currentCups = parseFloat(this.value);
-        document.getElementById('cups-value').innerText = currentCups;
-        updateCalculation();
+    waterSlider.addEventListener('input', function() {
+        currentWater = parseInt(this.value);
+        waterValue.textContent = currentWater;
+        // Пересчитываем кофе по пропорции
+        if (currentMethod && currentRatio) {
+            currentCoffee = Math.round(currentWater / currentRatio);
+            if (currentCoffee < 5) currentCoffee = 5;
+            if (currentCoffee > 60) currentCoffee = 60;
+            coffeeSlider.value = currentCoffee;
+            coffeeValue.textContent = currentCoffee;
+            updateDisplay();
+        }
     });
 
-    document.getElementById('coffee').addEventListener('input', function() {
+    coffeeSlider.addEventListener('input', function() {
         currentCoffee = parseInt(this.value);
-        document.getElementById('coffee-value').innerText = currentCoffee;
-        updateCalculation();
+        coffeeValue.textContent = currentCoffee;
+        // Пересчитываем пропорцию (вода / кофе)
+        if (currentMethod && currentWater > 0 && currentCoffee > 0) {
+            currentRatio = Math.round(currentWater / currentCoffee * 10) / 10;
+            updateDisplay();
+        }
     });
 
     // Выбор метода
     document.querySelectorAll('.method-card').forEach(card => {
         card.addEventListener('click', function() {
-            // Убираем выделение со всех
             document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
-            // Выделяем выбранный
             this.classList.add('selected');
-            
-            currentMethod = this.getAttribute('data-method');
-            
-            // Показываем форму и результат
-            document.getElementById('calculator-form').style.display = 'block';
-            document.getElementById('no-method').style.display = 'none';
-            
-            // Показываем результат
-            document.getElementById('result').style.display = 'block';
-            document.getElementById('result').classList.add('fade-in');
-            
-            // Обновляем данные
-            updateCalculation();
+
+            const method = this.dataset.method;
+            currentMethod = method;
+            const data = methodsData[method];
+            if (!data) return;
+
+            currentRatio = data.ratio;
+            // Устанавливаем начальные значения: вода 250 мл, кофе по пропорции
+            currentWater = 250;
+            currentCoffee = Math.round(currentWater / currentRatio);
+            if (currentCoffee < 5) currentCoffee = 5;
+            if (currentCoffee > 60) currentCoffee = 60;
+
+            waterSlider.value = currentWater;
+            coffeeSlider.value = currentCoffee;
+            waterValue.textContent = currentWater;
+            coffeeValue.textContent = currentCoffee;
+
+            // Показываем настройки и результат
+            settingsDiv.classList.remove('hidden');
+            noMethodDiv.classList.add('hidden');
+            resultDiv.classList.remove('hidden');
+            resultDiv.classList.add('fade-in');
+
+            updateDisplay();
         });
     });
 
-    function updateCalculation() {
+    // Обновление отображения результатов
+    function updateDisplay() {
         if (!currentMethod) return;
-        
-        const method = data[currentMethod];
-        if (!method) return;
-        
-        // Рассчитываем воду по пропорции
-        const waterAmount = currentCoffee * method.ratio;
-        
-        // Обновляем отображение
-        document.getElementById('method-name').innerHTML = method.name;
-        document.getElementById('coffee-result').innerHTML = currentCoffee;
-        document.getElementById('water-result').innerHTML = Math.round(waterAmount);
-        document.getElementById('grind').innerHTML = method.grind;
-        document.getElementById('temp').innerHTML = method.temp;
-        document.getElementById('time').innerHTML = method.time;
-        document.getElementById('ratio').innerHTML = `1:${method.ratio}`;
-        
-        // Обновляем инструкции
-        const instructionsList = document.getElementById('instructions');
-        instructionsList.innerHTML = method.instructions.map(inst => `<li>${inst}</li>`).join('');
-        
-        // Добавляем информацию о порциях
-        const servingsInfo = document.createElement('li');
-        servingsInfo.innerHTML = `<strong>Для ${currentCups} чашек:</strong> ${currentCoffee}г кофе на ${Math.round(waterAmount)}мл воды`;
-        instructionsList.appendChild(servingsInfo);
+        const data = methodsData[currentMethod];
+        if (!data) return;
+
+        const water = currentWater;
+        const coffee = currentCoffee;
+
+        methodNameEl.textContent = data.name;
+        coffeeResult.textContent = coffee;
+        waterResult.textContent = water;
+        grindEl.textContent = data.grind;
+        tempEl.textContent = data.temp;
+        timeEl.textContent = data.time;
+        const ratioStr = (water / coffee).toFixed(1);
+        ratioEl.textContent = `1:${ratioStr}`;
+
+        // Инструкции
+        const inst = data.instructions.slice();
+        inst.push(`Для ${water} мл воды: ${coffee} г кофе (пропорция 1:${ratioStr})`);
+        instructionsList.innerHTML = inst.map(i => `<li>${i}</li>`).join('');
     }
 
-    // Инициализация - показываем подсказку выбора метода
+    // Инициализация (ничего не выбрано)
     setTimeout(() => {
         if (!currentMethod) {
-            document.getElementById('no-method').style.display = 'block';
+            noMethodDiv.classList.remove('hidden');
         }
     }, 100);
 </script>

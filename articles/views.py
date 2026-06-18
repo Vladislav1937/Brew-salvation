@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import models
+from django.db.models import Count  # <-- добавили для подсчёта лайков
 from .models import Article, Category, Comment
 
 def article_list(request, category_slug=None):
@@ -21,12 +22,13 @@ def article_list(request, category_slug=None):
             models.Q(title__icontains=query) | models.Q(content__icontains=query)
         )
     
-    # СОРТИРОВКА
+    # СОРТИРОВКА (исправленная)
     sort = request.GET.get('sort')
     if sort == 'popular':
         all_articles = all_articles.order_by('-views', '-published_date')
     elif sort == 'likes':
-        all_articles = all_articles.order_by('-likes__count', '-published_date')
+        # Аннотируем количество лайков и сортируем по нему
+        all_articles = all_articles.annotate(num_likes=Count('likes')).order_by('-num_likes', '-published_date')
     else:
         all_articles = all_articles.order_by('-published_date')
     
@@ -60,7 +62,7 @@ def article_detail(request, slug):
         is_published=True
     )
     
-    # ===== УВЕЛИЧИВАЕМ ПРОСМОТРЫ =====
+    # Увеличиваем просмотры
     if request.method == 'GET':
         article.views += 1
         article.save(update_fields=['views'])
@@ -84,7 +86,6 @@ def article_detail(request, slug):
         return redirect('articles:article_detail', slug=article.slug)
     
     comments = article.comments.filter(is_approved=True)
-    
     total_likes = article.likes.count()
     user_liked = False
     if request.user.is_authenticated:
