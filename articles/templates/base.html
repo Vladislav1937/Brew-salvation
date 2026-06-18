@@ -5,67 +5,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Brew Salvation{% endblock %}</title>
-    <!-- Tailwind CSS (сборка через django-tailwind-cli) -->
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Tailwind CSS (генерируется django-tailwind-cli) -->
     {% tailwind_css %}
-    <!-- Дополнительный кастомный стиль для специфичных элементов -->
+    
+    <!-- Кастомные стили (если нужны) -->
     <style>
         .logo-text {
             font-size: 1.8rem;
             font-weight: 700;
             color: #1a1a1a;
             text-decoration: none;
+            transition: color 0.2s;
+        }
+        .logo-text:hover {
+            color: #a0522d;
         }
         .sidebar-link {
             color: #4a3b2c;
-            transition: color 0.2s;
+            transition: color 0.2s, background-color 0.2s;
+            border-radius: 0.5rem;
         }
         .sidebar-link:hover {
             color: #a0522d;
+            background-color: #f5e6d3;
         }
         .sidebar-link.active {
             font-weight: 700;
             color: #a0522d;
+            background-color: #f5e6d3;
         }
     </style>
+    
+    {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 
     <!-- ==================== НАВИГАЦИЯ ==================== -->
-    <nav class="bg-white border-b border-gray-200 shadow-sm">
+    <nav class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Логотип -->
                 <a href="/" class="logo-text flex items-center gap-2">
                     <span class="text-2xl">☕</span> Brew Salvation
                 </a>
-                <!-- Кнопка админки -->
-                <a href="/admin/" target="_blank" 
-                   class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-accent transition">
-                    🔐 Админ
-                </a>
+                <!-- Правая часть: админка и возможно поиск (можно добавить позже) -->
+                <div class="flex items-center gap-3">
+                    <a href="/admin/" target="_blank" 
+                       class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-accent transition">
+                        <i class="fas fa-lock mr-2"></i> Админ
+                    </a>
+                    <!-- Можно добавить кнопку поиска или профиля -->
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- ==================== ОСНОВНАЯ СЕТКА ==================== -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- ==================== ОСНОВНОЙ КОНТЕНТ ==================== -->
+    <div class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         <div class="flex flex-col md:flex-row gap-8">
             <!-- ====== БОКОВАЯ ПАНЕЛЬ ====== -->
             <aside class="w-full md:w-64 lg:w-72 flex-shrink-0">
-                <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 sticky top-4">
-                    <h5 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Темы</h5>
+                <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 sticky top-24">
+                    <h5 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+                        <i class="fas fa-tags mr-2"></i> Темы
+                    </h5>
                     <ul class="space-y-1">
                         <li>
                             <a href="{% url 'articles:article_list' %}" 
-                               class="block px-3 py-2 rounded-md text-sm font-medium sidebar-link {% if not current_category %}active{% endif %}">
-                                Все статьи
+                               class="block px-3 py-2 text-sm font-medium sidebar-link {% if not current_category %}active{% endif %}">
+                                <i class="fas fa-newspaper mr-2"></i> Все статьи
                             </a>
                         </li>
                         {% for cat in categories %}
                         <li>
                             <a href="{% url 'articles:category_filter' cat.slug %}" 
-                               class="block px-3 py-2 rounded-md text-sm font-medium sidebar-link {% if current_category and current_category.slug == cat.slug %}active{% endif %}">
-                                {{ cat.name }}
+                               class="block px-3 py-2 text-sm font-medium sidebar-link {% if current_category and current_category.slug == cat.slug %}active{% endif %}">
+                                <i class="fas fa-folder-open mr-2"></i> {{ cat.name }}
                             </a>
                         </li>
                         {% endfor %}
@@ -75,18 +99,18 @@
 
                     <div class="space-y-2">
                         <a href="{% url 'catalog:coffee_list' %}" 
-                           class="block w-full text-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
-                            Каталог кофе
+                           class="flex items-center justify-center w-full px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
+                            <i class="fas fa-coffee mr-2"></i> Каталог кофе
                         </a>
                         <a href="{% url 'articles:brewing_calculator' %}" 
-                           class="block w-full text-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
-                            Калькулятор заваривания
+                           class="flex items-center justify-center w-full px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
+                            <i class="fas fa-calculator mr-2"></i> Калькулятор заваривания
                         </a>
                     </div>
                 </div>
             </aside>
 
-            <!-- ====== ОСНОВНОЙ КОНТЕНТ ====== -->
+            <!-- ====== ОСНОВНОЙ БЛОК ====== -->
             <main class="flex-1 min-w-0">
                 {% block content %}
                 {% endblock %}
@@ -94,15 +118,25 @@
         </div>
     </div>
 
-    <!-- ==================== ФУТЕР (без пагинации) ==================== -->
-    <footer class="bg-white border-t border-gray-200 mt-12">
+    <!-- ==================== ФУТЕР ==================== -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="text-center text-sm text-gray-500 space-y-1">
-                <p>Brew Salvation — ваш гид в мир specialty coffee</p>
-                <p class="text-xs">© 2026 Использование любых материалов с данного ресурса возможно только после письменного согласия владельца авторских прав</p>
+            <div class="flex flex-col sm:flex-row justify-between items-center text-sm text-gray-500 space-y-2 sm:space-y-0">
+                <div class="flex items-center gap-2">
+                    <span>☕</span>
+                    <span>Brew Salvation — ваш гид в мир specialty coffee</span>
+                </div>
+                <div class="flex items-center gap-4 text-xs">
+                    <span>© 2026</span>
+                    <span>Все права защищены</span>
+                    <a href="#" class="hover:text-brand-accent transition">Политика конфиденциальности</a>
+                </div>
             </div>
         </div>
     </footer>
+
+    <!-- Блок для скриптов (можно добавить JS в дочерние шаблоны) -->
+    {% block extra_js %}{% endblock %}
 
 </body>
 </html>

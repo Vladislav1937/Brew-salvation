@@ -5,8 +5,18 @@ module.exports = {
     "./**/templates/**/*.html",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        brand: {
+          accent: '#a0522d',   // кофейный акцент
+          light: '#f5e6d3',    // светлый кофейный
+          dark: '#6b3a1f',     // тёмный кофейный
+        }
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+    },
   },
-  plugins: [],
-  prefix: 'tw-',   // 👈 ЭТО ГЛАВНОЕ – все классы будут с префиксом
+  plugins: [],   // <-- пустой массив (без require(...))
 }
