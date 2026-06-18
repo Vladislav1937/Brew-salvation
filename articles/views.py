@@ -3,13 +3,10 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.db import models  # для Q
+from django.db import models
 from .models import Article, Category, Comment
 
 def article_list(request, category_slug=None):
-    """
-    Список статей с фильтром по категории, поиском, сортировкой и пагинацией.
-    """
     all_articles = Article.objects.filter(is_published=True).order_by('-published_date')
     
     current_category = None
@@ -29,9 +26,9 @@ def article_list(request, category_slug=None):
     if sort == 'popular':
         all_articles = all_articles.order_by('-views', '-published_date')
     elif sort == 'likes':
-        all_articles = all_articles.order_by('-total_likes', '-published_date')
+        all_articles = all_articles.order_by('-likes__count', '-published_date')
     else:
-        all_articles = all_articles.order_by('-published_date')  # новизна по умолчанию
+        all_articles = all_articles.order_by('-published_date')
     
     # ПАГИНАЦИЯ
     paginator = Paginator(all_articles, 6)
@@ -57,15 +54,16 @@ def article_list(request, category_slug=None):
 
 
 def article_detail(request, slug):
-    """
-    Детальная страница статьи.
-    Обрабатывает POST-запросы для добавления комментариев.
-    """
     article = get_object_or_404(
         Article.objects.prefetch_related('images', 'comments'),
         slug=slug,
         is_published=True
     )
+    
+    # ===== УВЕЛИЧИВАЕМ ПРОСМОТРЫ =====
+    if request.method == 'GET':
+        article.views += 1
+        article.save(update_fields=['views'])
     
     # Обработка комментариев
     if request.method == 'POST':
@@ -77,7 +75,7 @@ def article_detail(request, slug):
                 article=article,
                 author_name=author_name,
                 text=comment_text,
-                is_approved=False  # на модерацию
+                is_approved=False
             )
             messages.success(request, 'Спасибо! Ваш комментарий отправлен на модерацию.')
         else:
@@ -85,10 +83,8 @@ def article_detail(request, slug):
         
         return redirect('articles:article_detail', slug=article.slug)
     
-    # Одобренные комментарии
     comments = article.comments.filter(is_approved=True)
     
-    # Информация о лайках (для отображения в шаблоне)
     total_likes = article.likes.count()
     user_liked = False
     if request.user.is_authenticated:
@@ -104,15 +100,11 @@ def article_detail(request, slug):
 
 
 def brewing_calculator(request):
-    """Страница калькулятора заваривания."""
     return render(request, 'articles/brewing_calculator.html')
 
 
-@csrf_exempt  # если используешь AJAX без CSRF-токена, но лучше передавать токен
+@csrf_exempt
 def like_article(request, slug):
-    """
-    AJAX-обработчик лайков: добавляет/убирает лайк, возвращает JSON.
-    """
     if request.method != 'POST':
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     

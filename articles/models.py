@@ -26,6 +26,10 @@ class Article(models.Model):
     updated_date = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
     is_published = models.BooleanField(default=True, verbose_name="Опубликовано")
     image = models.ImageField(upload_to='articles/', blank=True, null=True, verbose_name="Изображение")
+    
+    # ===== НОВОЕ ПОЛЕ =====
+    views = models.IntegerField(default=0, verbose_name="Количество просмотров")
+    
     likes = models.ManyToManyField(User, related_name='liked_articles', blank=True, verbose_name="Лайки")
 
     class Meta:

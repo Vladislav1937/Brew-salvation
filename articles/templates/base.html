@@ -6,15 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Brew Salvation{% endblock %}</title>
 
-    <!-- Шрифт Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome (иконки) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- Tailwind CSS -->
     {% tailwind_css %}
 
     <style>
@@ -51,7 +48,6 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans antialiased">
 
-    <!-- ===== НАВИГАЦИЯ ===== -->
     <nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -59,11 +55,9 @@
                     <span class="text-2xl">☕</span> Brew Salvation
                 </a>
                 <div class="flex items-center gap-3">
-                    <!-- Кнопка переключения темы -->
                     <button id="theme-toggle" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-accent transition">
                         <i id="theme-icon" class="fas fa-moon"></i>
                     </button>
-                    <!-- Админка -->
                     <a href="/admin/" target="_blank" 
                        class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                         🔐 Админ
@@ -73,10 +67,8 @@
         </div>
     </nav>
 
-    <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col md:flex-row gap-8">
-            <!-- Боковая панель -->
             <aside class="w-full md:w-64 lg:w-72 flex-shrink-0">
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700 sticky top-4">
                     <h5 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Темы</h5>
@@ -96,9 +88,7 @@
                         </li>
                         {% endfor %}
                     </ul>
-
                     <hr class="my-5 border-gray-200 dark:border-gray-700">
-
                     <div class="space-y-2">
                         <a href="{% url 'catalog:coffee_list' %}" 
                            class="block w-full text-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
@@ -111,8 +101,6 @@
                     </div>
                 </div>
             </aside>
-
-            <!-- Основной контент -->
             <main class="flex-1 min-w-0">
                 {% block content %}
                 {% endblock %}
@@ -120,7 +108,6 @@
         </div>
     </div>
 
-    <!-- ===== ФУТЕР ===== -->
     <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 mt-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="text-center text-sm text-gray-500 dark:text-gray-400 space-y-1">
@@ -130,9 +117,7 @@
         </div>
     </footer>
 
-    <!-- ===== СКРИПТ ПЕРЕКЛЮЧЕНИЯ ТЕМЫ ===== -->
     <script>
-        // Переключение тёмной темы
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
         const htmlElement = document.documentElement;
@@ -152,7 +137,6 @@
             localStorage.setItem('theme', theme);
         }
 
-        // Проверяем сохранённую тему
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) {
             setTheme(savedTheme);
@@ -162,7 +146,6 @@
             setTheme('light');
         }
 
-        // Обработчик клика
         if (themeToggle) {
             themeToggle.addEventListener('click', function() {
                 if (htmlElement.classList.contains('dark')) {
