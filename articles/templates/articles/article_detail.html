@@ -20,7 +20,7 @@
                 <i class="far fa-eye"></i> {{ article.views|default:0 }}
             </span>
             <span class="flex items-center gap-1">
-                <i class="far fa-heart"></i> {{ total_likes }}
+                <i class="far fa-heart"></i> <span id="likes-count">{{ total_likes }}</span>
             </span>
             <span class="flex items-center gap-1">
                 <i class="far fa-comment"></i> {{ comments|length }}
@@ -41,12 +41,11 @@
     <!-- Лайки и поделиться -->
     <div class="flex flex-wrap items-center justify-between gap-4 py-6 border-t border-b border-gray-100 my-8">
         <div class="flex items-center gap-4">
-            <form action="{% url 'articles:like_article' article.slug %}" method="post" class="inline">
-                {% csrf_token %}
-                <button type="submit" class="flex items-center gap-2 px-4 py-2 bg-brand-accent/10 text-brand-accent hover:bg-brand-accent hover:text-white rounded-lg transition text-sm font-medium">
-                    <i class="fas fa-heart"></i> <span>{{ total_likes }}</span>
-                </button>
-            </form>
+            <!-- AJAX-кнопка лайка -->
+            <button id="like-button" data-slug="{{ article.slug }}" 
+                    class="flex items-center gap-2 px-4 py-2 bg-brand-accent/10 text-brand-accent hover:bg-brand-accent hover:text-white rounded-lg transition text-sm font-medium">
+                <i class="fas fa-heart"></i> <span id="likes-count">{{ total_likes }}</span>
+            </button>
             <span class="text-sm text-gray-400">|</span>
             <button class="text-sm text-gray-500 hover:text-brand-accent transition flex items-center gap-1" onclick="window.print()">
                 <i class="fas fa-print"></i> Печать
@@ -64,7 +63,6 @@
     <section class="mt-8">
         <h2 class="text-2xl font-bold text-gray-900 mb-4">Комментарии ({{ comments|length }})</h2>
 
-        <!-- Вывод сообщений (если есть) -->
         {% if messages %}
             <div class="mb-4">
                 {% for message in messages %}
@@ -75,7 +73,6 @@
             </div>
         {% endif %}
 
-        <!-- Форма отправки комментария -->
         <form method="post" action="" class="mb-6">
             {% csrf_token %}
             {% if not user.is_authenticated %}
@@ -95,7 +92,6 @@
             </div>
         </form>
 
-        <!-- Список одобренных комментариев -->
         <div class="space-y-4">
             {% for comment in comments %}
                 <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
@@ -117,4 +113,47 @@
         </a>
     </div>
 </article>
+
+<!-- CSRF-токен для AJAX -->
+<input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const likeButton = document.getElementById('like-button');
+    if (likeButton) {
+        likeButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const slug = this.dataset.slug;
+            const csrfToken = document.getElementById('csrf-token').value;
+            
+            fetch(`/articles/like/${slug}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('likes-count').textContent = data.total_likes;
+                    // Обновляем иконку (закрашиваем, если liked)
+                    const icon = likeButton.querySelector('i');
+                    if (data.liked) {
+                        icon.style.color = '#e53e3e'; // красный
+                    } else {
+                        icon.style.color = ''; // возвращаем стандартный
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Произошла ошибка при отправке запроса.');
+            });
+        });
+    }
+});
+</script>
 {% endblock %}
