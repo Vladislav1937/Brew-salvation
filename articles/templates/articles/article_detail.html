@@ -5,10 +5,8 @@
 
 {% block content %}
 <article class="max-w-4xl mx-auto">
-    <!-- Заголовок и мета-информация -->
     <header class="mb-8">
         <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ article.title }}</h1>
-        
         <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
             {% if article.category %}
                 <span class="px-3 py-1 bg-brand-accent/10 text-brand-accent rounded-full font-medium">
@@ -30,19 +28,16 @@
         </div>
     </header>
 
-    <!-- Изображение -->
     {% if article.image %}
         <div class="mb-8">
             <img src="{{ article.image.url }}" alt="{{ article.title }}" class="w-full rounded-2xl shadow-lg border border-gray-100">
         </div>
     {% endif %}
 
-    <!-- Текст статьи -->
     <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed">
         {{ article.content|safe }}
     </div>
 
-    <!-- Лайки и поделиться -->
     <div class="flex flex-wrap items-center justify-between gap-4 py-6 border-t border-b border-gray-100 my-8">
         <div class="flex items-center gap-4">
             <form action="{% url 'articles:like_article' article.slug %}" method="post" class="inline">
@@ -64,7 +59,6 @@
         </div>
     </div>
 
-    <!-- Секция комментариев -->
     <section class="mt-8">
         <h2 class="text-2xl font-bold text-gray-900 mb-4">Комментарии ({{ article.comments.count }})</h2>
 
@@ -80,10 +74,10 @@
                 </div>
             </form>
         {% else %}
-            <p class="text-sm text-gray-500 mb-4"><a href="{% url 'login' %}" class="text-brand-accent hover:underline">Войдите</a>, чтобы оставить комментарий.</p>
+            <!-- ИСПРАВЛЕННАЯ ССЫЛКА (ведёт в админку) -->
+            <p class="text-sm text-gray-500 mb-4"><a href="{% url 'admin:login' %}" class="text-brand-accent hover:underline">Войдите</a>, чтобы оставить комментарий.</p>
         {% endif %}
 
-        <!-- Список комментариев -->
         <div class="space-y-4">
             {% for comment in article.comments.all %}
                 <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
@@ -99,7 +93,6 @@
         </div>
     </section>
 
-    <!-- Назад к списку -->
     <div class="mt-8">
         <a href="{% url 'articles:article_list' %}" class="inline-flex items-center text-brand-accent hover:underline">
             <i class="fas fa-arrow-left mr-2"></i> Назад ко всем статьям
