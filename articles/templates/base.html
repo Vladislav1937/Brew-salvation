@@ -22,33 +22,33 @@
             text-decoration: none;
         }
         .dark .logo-text {
-            color: #f5f5f5;
+            color: #ffffff;
         }
         .sidebar-link {
             color: #4a3b2c;
             transition: color 0.2s;
         }
         .dark .sidebar-link {
-            color: #b0a090;
+            color: #d0c0b0;
         }
         .sidebar-link:hover {
             color: #a0522d;
         }
         .dark .sidebar-link:hover {
-            color: #d4a574;
+            color: #e8c8a0;
         }
         .sidebar-link.active {
             font-weight: 700;
             color: #a0522d;
         }
         .dark .sidebar-link.active {
-            color: #d4a574;
+            color: #e8c8a0;
         }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans antialiased">
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white font-sans antialiased">
 
-    <nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <a href="/" class="logo-text flex items-center gap-2">
@@ -59,7 +59,7 @@
                         <i id="theme-icon" class="fas fa-moon"></i>
                     </button>
                     <a href="/admin/" target="_blank" 
-                       class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                       class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                         🔐 Админ
                     </a>
                 </div>
@@ -70,7 +70,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col md:flex-row gap-8">
             <aside class="w-full md:w-64 lg:w-72 flex-shrink-0">
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700 sticky top-4">
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 sticky top-4">
                     <h5 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Темы</h5>
                     <ul class="space-y-1">
                         <li>
@@ -88,14 +88,14 @@
                         </li>
                         {% endfor %}
                     </ul>
-                    <hr class="my-5 border-gray-200 dark:border-gray-700">
+                    <hr class="my-5 border-gray-200 dark:border-gray-800">
                     <div class="space-y-2">
                         <a href="{% url 'catalog:coffee_list' %}" 
-                           class="block w-full text-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                           class="block w-full text-center px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                             Каталог кофе
                         </a>
                         <a href="{% url 'articles:brewing_calculator' %}" 
-                           class="block w-full text-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                           class="block w-full text-center px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                             Калькулятор заваривания
                         </a>
                     </div>
@@ -108,7 +108,7 @@
         </div>
     </div>
 
-    <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 mt-12">
+    <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 mt-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="text-center text-sm text-gray-500 dark:text-gray-400 space-y-1">
                 <p>Brew Salvation — ваш гид в мир specialty coffee</p>
