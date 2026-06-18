@@ -3,25 +3,91 @@
 {% block title %}Каталог кофе | Brew Salvation{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Каталог specialty coffee</h1>
-<div class="row">
-    {% for coffee in page_obj %}
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            {% if coffee.image %}
-            <img src="{{ coffee.image.url }}" class="card-img-top" alt="{{ coffee.name }}" style="height: 200px; object-fit: cover;">
-            {% endif %}
-            <div class="card-body">
-                <h5 class="card-title">{{ coffee.name }}</h5>
-                <p class="card-text text-muted">{{ coffee.origin.name }}</p>
-                <p class="card-text">{{ coffee.tasting_notes|truncatewords:10 }}</p>
-                <a href="{{ coffee.get_absolute_url }}" class="btn btn-outline-primary btn-sm">Подробнее</a>
-            </div>
-        </div>
-    </div>
-    {% empty %}
-    <p>В каталоге пока нет кофе. Добавьте через админ-панель.</p>
-    {% endfor %}
-</div>
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Каталог specialty coffee</h1>
 
+    {% if page_obj %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for coffee in page_obj %}
+                <article class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition duration-200 flex flex-col">
+                    {% if coffee.image %}
+                        <img src="{{ coffee.image.url }}" 
+                             alt="{{ coffee.name }}" 
+                             class="w-full h-48 object-cover">
+                    {% endif %}
+                    <div class="p-5 flex flex-col flex-grow">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-1">
+                            {{ coffee.name }}
+                        </h2>
+                        <p class="text-sm text-gray-500 mb-2">{{ coffee.origin.name }}</p>
+                        <p class="text-gray-600 text-sm flex-grow">
+                            {{ coffee.tasting_notes|truncatewords:10 }}
+                        </p>
+                        <div class="mt-4">
+                            <a href="{{ coffee.get_absolute_url }}" 
+                               class="inline-flex items-center text-sm font-medium text-brand-accent hover:underline">
+                                Подробнее →
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        <!-- ====== ПАГИНАЦИЯ ====== -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Пагинация каталога" class="mt-8">
+            <ul class="flex justify-center items-center gap-1 flex-wrap">
+                <!-- Первая -->
+                {% if page_obj.has_previous %}
+                    <li>
+                        <a href="?page=1" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">
+                            &laquo; Первая
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">
+                            Назад
+                        </a>
+                    </li>
+                {% else %}
+                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed">&laquo; Первая</span></li>
+                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed">Назад</span></li>
+                {% endif %}
+
+                <!-- Номера страниц -->
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        {% if page_obj.number == num %}
+                            <li><span class="px-4 py-2 rounded-md text-sm font-bold text-white bg-brand-accent border border-brand-accent">{{ num }}</span></li>
+                        {% else %}
+                            <li><a href="?page={{ num }}" class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">{{ num }}</a></li>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Следующая -->
+                {% if page_obj.has_next %}
+                    <li>
+                        <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">
+                            Вперед
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page={{ page_obj.paginator.num_pages }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">
+                            Последняя &raquo;
+                        </a>
+                    </li>
+                {% else %}
+                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed">Вперед</span></li>
+                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed">Последняя &raquo;</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    {% else %}
+        <div class="bg-blue-50 border border-blue-200 text-blue-700 px-6 py-4 rounded-lg">
+            В каталоге пока нет кофе. Добавьте через админ-панель.
+        </div>
+    {% endif %}
 {% endblock %}

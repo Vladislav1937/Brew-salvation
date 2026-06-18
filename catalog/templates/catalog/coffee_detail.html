@@ -1,24 +1,34 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ coffee.name }} |  {% endblock %}
+{% block title %}{{ coffee.name }} | Brew Salvation{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6">
-        {% if coffee.image %}
-        <img src="{{ coffee.image.url }}" class="img-fluid rounded" alt="{{ coffee.name }}">
-        {% endif %}
+    <div class="flex flex-col md:flex-row gap-8">
+        <!-- Левая колонка: изображение -->
+        <div class="md:w-1/2">
+            {% if coffee.image %}
+                <img src="{{ coffee.image.url }}" 
+                     alt="{{ coffee.name }}" 
+                     class="w-full rounded-xl shadow-sm border border-gray-100 object-cover">
+            {% endif %}
+        </div>
+
+        <!-- Правая колонка: информация -->
+        <div class="md:w-1/2 space-y-4">
+            <h1 class="text-3xl font-bold text-gray-900">{{ coffee.name }}</h1>
+            <p><span class="font-semibold text-gray-700">Происхождение:</span> {{ coffee.origin.name }}</p>
+            <p><span class="font-semibold text-gray-700">Обработка:</span> {{ coffee.processing|default:"не указано" }}</p>
+            <p><span class="font-semibold text-gray-700">Вкусовые ноты:</span> {{ coffee.tasting_notes }}</p>
+            <div class="text-gray-700 leading-relaxed">
+                {{ coffee.description|linebreaks }}
+            </div>
+            {% if coffee.price %}
+                <p><span class="font-semibold text-gray-700">Цена:</span> <span class="text-lg font-bold text-brand-accent">{{ coffee.price }} ₽</span></p>
+            {% endif %}
+            <a href="{% url 'catalog:coffee_list' %}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
+                ← Назад в каталог
+            </a>
+        </div>
     </div>
-    <div class="col-md-6">
-        <h1>{{ coffee.name }}</h1>
-        <p><strong>Происхождение:</strong> {{ coffee.origin.name }}</p>
-        <p><strong>Обработка:</strong> {{ coffee.processing|default:"не указано" }}</p>
-        <p><strong>Вкусовые ноты:</strong> {{ coffee.tasting_notes }}</p>
-        <p>{{ coffee.description|linebreaks }}</p>
-        {% if coffee.price %}
-        <p><strong>Цена:</strong> {{ coffee.price }} ₽</p>
-        {% endif %}
-        <a href="{% url 'catalog:coffee_list' %}" class="btn btn-secondary">← Назад в каталог</a>
-    </div>
-</div>
 {% endblock %}
