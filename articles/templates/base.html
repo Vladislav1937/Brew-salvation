@@ -1,116 +1,118 @@
 {% load tailwind_cli %}
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="{% if request.COOKIES.theme == 'dark' %}dark{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Brew Salvation{% endblock %}</title>
-    
-    <!-- Google Fonts: Inter -->
+
+    <!-- Шрифт Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome Icons -->
+
+    <!-- Font Awesome (иконки) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    <!-- Tailwind CSS (генерируется django-tailwind-cli) -->
+
+    <!-- Tailwind CSS -->
     {% tailwind_css %}
-    
-    <!-- Кастомные стили (если нужны) -->
+
     <style>
         .logo-text {
             font-size: 1.8rem;
             font-weight: 700;
             color: #1a1a1a;
             text-decoration: none;
-            transition: color 0.2s;
         }
-        .logo-text:hover {
-            color: #a0522d;
+        .dark .logo-text {
+            color: #f5f5f5;
         }
         .sidebar-link {
             color: #4a3b2c;
-            transition: color 0.2s, background-color 0.2s;
-            border-radius: 0.5rem;
+            transition: color 0.2s;
+        }
+        .dark .sidebar-link {
+            color: #b0a090;
         }
         .sidebar-link:hover {
             color: #a0522d;
-            background-color: #f5e6d3;
+        }
+        .dark .sidebar-link:hover {
+            color: #d4a574;
         }
         .sidebar-link.active {
             font-weight: 700;
             color: #a0522d;
-            background-color: #f5e6d3;
+        }
+        .dark .sidebar-link.active {
+            color: #d4a574;
         }
     </style>
-    
-    {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans antialiased">
 
-    <!-- ==================== НАВИГАЦИЯ ==================== -->
-    <nav class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+    <!-- ===== НАВИГАЦИЯ ===== -->
+    <nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <!-- Логотип -->
                 <a href="/" class="logo-text flex items-center gap-2">
                     <span class="text-2xl">☕</span> Brew Salvation
                 </a>
-                <!-- Правая часть: админка и возможно поиск (можно добавить позже) -->
                 <div class="flex items-center gap-3">
+                    <!-- Кнопка переключения темы -->
+                    <button id="theme-toggle" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-accent transition">
+                        <i id="theme-icon" class="fas fa-moon"></i>
+                    </button>
+                    <!-- Админка -->
                     <a href="/admin/" target="_blank" 
-                       class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-accent transition">
-                        <i class="fas fa-lock mr-2"></i> Админ
+                       class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                        🔐 Админ
                     </a>
-                    <!-- Можно добавить кнопку поиска или профиля -->
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- ==================== ОСНОВНОЙ КОНТЕНТ ==================== -->
-    <div class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col md:flex-row gap-8">
-            <!-- ====== БОКОВАЯ ПАНЕЛЬ ====== -->
+            <!-- Боковая панель -->
             <aside class="w-full md:w-64 lg:w-72 flex-shrink-0">
-                <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 sticky top-24">
-                    <h5 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-                        <i class="fas fa-tags mr-2"></i> Темы
-                    </h5>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700 sticky top-4">
+                    <h5 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Темы</h5>
                     <ul class="space-y-1">
                         <li>
                             <a href="{% url 'articles:article_list' %}" 
-                               class="block px-3 py-2 text-sm font-medium sidebar-link {% if not current_category %}active{% endif %}">
-                                <i class="fas fa-newspaper mr-2"></i> Все статьи
+                               class="block px-3 py-2 rounded-md text-sm font-medium sidebar-link {% if not current_category %}active{% endif %}">
+                                Все статьи
                             </a>
                         </li>
                         {% for cat in categories %}
                         <li>
                             <a href="{% url 'articles:category_filter' cat.slug %}" 
-                               class="block px-3 py-2 text-sm font-medium sidebar-link {% if current_category and current_category.slug == cat.slug %}active{% endif %}">
-                                <i class="fas fa-folder-open mr-2"></i> {{ cat.name }}
+                               class="block px-3 py-2 rounded-md text-sm font-medium sidebar-link {% if current_category and current_category.slug == cat.slug %}active{% endif %}">
+                                {{ cat.name }}
                             </a>
                         </li>
                         {% endfor %}
                     </ul>
 
-                    <hr class="my-5 border-gray-200">
+                    <hr class="my-5 border-gray-200 dark:border-gray-700">
 
                     <div class="space-y-2">
                         <a href="{% url 'catalog:coffee_list' %}" 
-                           class="flex items-center justify-center w-full px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
-                            <i class="fas fa-coffee mr-2"></i> Каталог кофе
+                           class="block w-full text-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                            Каталог кофе
                         </a>
                         <a href="{% url 'articles:brewing_calculator' %}" 
-                           class="flex items-center justify-center w-full px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
-                            <i class="fas fa-calculator mr-2"></i> Калькулятор заваривания
+                           class="block w-full text-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                            Калькулятор заваривания
                         </a>
                     </div>
                 </div>
             </aside>
 
-            <!-- ====== ОСНОВНОЙ БЛОК ====== -->
+            <!-- Основной контент -->
             <main class="flex-1 min-w-0">
                 {% block content %}
                 {% endblock %}
@@ -118,25 +120,58 @@
         </div>
     </div>
 
-    <!-- ==================== ФУТЕР ==================== -->
-    <footer class="bg-white border-t border-gray-200 mt-auto">
+    <!-- ===== ФУТЕР ===== -->
+    <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 mt-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex flex-col sm:flex-row justify-between items-center text-sm text-gray-500 space-y-2 sm:space-y-0">
-                <div class="flex items-center gap-2">
-                    <span>☕</span>
-                    <span>Brew Salvation — ваш гид в мир specialty coffee</span>
-                </div>
-                <div class="flex items-center gap-4 text-xs">
-                    <span>© 2026</span>
-                    <span>Все права защищены</span>
-                    <a href="#" class="hover:text-brand-accent transition">Политика конфиденциальности</a>
-                </div>
+            <div class="text-center text-sm text-gray-500 dark:text-gray-400 space-y-1">
+                <p>Brew Salvation — ваш гид в мир specialty coffee</p>
+                <p class="text-xs">© 2026 Использование любых материалов с данного ресурса возможно только после письменного согласия владельца авторских прав</p>
             </div>
         </div>
     </footer>
 
-    <!-- Блок для скриптов (можно добавить JS в дочерние шаблоны) -->
-    {% block extra_js %}{% endblock %}
+    <!-- ===== СКРИПТ ПЕРЕКЛЮЧЕНИЯ ТЕМЫ ===== -->
+    <script>
+        // Переключение тёмной темы
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const htmlElement = document.documentElement;
 
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                htmlElement.classList.add('dark');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                document.cookie = "theme=dark; path=/; max-age=31536000";
+            } else {
+                htmlElement.classList.remove('dark');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                document.cookie = "theme=light; path=/; max-age=31536000";
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        // Проверяем сохранённую тему
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setTheme(savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            setTheme('dark');
+        } else {
+            setTheme('light');
+        }
+
+        // Обработчик клика
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                if (htmlElement.classList.contains('dark')) {
+                    setTheme('light');
+                } else {
+                    setTheme('dark');
+                }
+            });
+        }
+    </script>
 </body>
 </html>

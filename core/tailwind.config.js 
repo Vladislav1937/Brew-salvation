@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',  // <-- ВКЛЮЧАЕМ ТЁМНУЮ ТЕМУ
   content: [
     "./templates/**/*.html",
     "./**/templates/**/*.html",
@@ -8,9 +9,9 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          accent: '#a0522d',   // кофейный акцент
-          light: '#f5e6d3',    // светлый кофейный
-          dark: '#6b3a1f',     // тёмный кофейный
+          accent: '#a0522d',
+          light: '#f5e6d3',
+          dark: '#6b3a1f',
         }
       },
       fontFamily: {
@@ -18,5 +19,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],   // <-- пустой массив (без require(...))
+  plugins: [],
 }

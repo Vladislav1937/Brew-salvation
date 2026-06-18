@@ -6,11 +6,10 @@
 {% block content %}
     <!-- Заголовок с поиском -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Статьи о кофе</h1>
-        <!-- Поиск (форма будет отправлять GET-запрос) -->
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Статьи о кофе</h1>
         <form method="get" action="{% url 'articles:article_list' %}" class="flex gap-2">
             <input type="text" name="q" placeholder="Поиск статей..." 
-                   class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-brand-accent outline-none w-full sm:w-64 text-sm"
+                   class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-brand-accent outline-none w-full sm:w-64 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                    value="{{ request.GET.q|default:'' }}">
             <button type="submit" class="px-4 py-2 bg-brand-accent text-white rounded-lg hover:bg-opacity-90 transition text-sm font-medium">
                 Найти
@@ -18,30 +17,28 @@
         </form>
     </div>
 
-    <!-- Сортировка (можно добавить логику) -->
-    <div class="flex flex-wrap items-center gap-4 mb-6 text-sm text-gray-500">
+    <!-- Сортировка -->
+    <div class="flex flex-wrap items-center gap-4 mb-6 text-sm text-gray-500 dark:text-gray-400">
         <span class="font-medium">Сортировать:</span>
-        <a href="?sort=newest" class="hover:text-brand-accent transition {% if request.GET.sort == 'newest' or not request.GET.sort %}text-brand-accent font-semibold{% endif %}">По новизне</a>
-        <a href="?sort=popular" class="hover:text-brand-accent transition {% if request.GET.sort == 'popular' %}text-brand-accent font-semibold{% endif %}">По популярности</a>
-        <a href="?sort=likes" class="hover:text-brand-accent transition {% if request.GET.sort == 'likes' %}text-brand-accent font-semibold{% endif %}">По лайкам</a>
+        <a href="?sort=newest{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+           class="hover:text-brand-accent transition {% if request.GET.sort == 'newest' or not request.GET.sort %}text-brand-accent font-semibold{% endif %}">По новизне</a>
+        <a href="?sort=popular{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+           class="hover:text-brand-accent transition {% if request.GET.sort == 'popular' %}text-brand-accent font-semibold{% endif %}">По популярности</a>
+        <a href="?sort=likes{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+           class="hover:text-brand-accent transition {% if request.GET.sort == 'likes' %}text-brand-accent font-semibold{% endif %}">По лайкам</a>
     </div>
 
     <!-- Список статей -->
     {% if articles %}
         <div class="space-y-6">
             {% for article in articles %}
-                <article class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition duration-300 flex flex-col md:flex-row">
-                    <!-- Изображение (если есть) -->
+                <article class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-lg transition duration-300 flex flex-col md:flex-row">
                     {% if article.image %}
                         <div class="md:w-1/3 lg:w-1/4 flex-shrink-0">
-                            <img src="{{ article.image.url }}" 
-                                 alt="{{ article.title }}" 
-                                 class="w-full h-48 md:h-full object-cover">
+                            <img src="{{ article.image.url }}" alt="{{ article.title }}" class="w-full h-48 md:h-full object-cover">
                         </div>
                     {% endif %}
-                    <!-- Контент -->
                     <div class="p-5 md:p-6 flex flex-col flex-grow">
-                        <!-- Категория (если есть) -->
                         {% if article.category %}
                             <div class="mb-2">
                                 <span class="inline-block px-3 py-1 text-xs font-semibold text-brand-accent bg-brand-accent/10 rounded-full">
@@ -49,48 +46,24 @@
                                 </span>
                             </div>
                         {% endif %}
-                        <h2 class="text-xl font-semibold text-gray-900 mb-2">
-                            <a href="{% url 'articles:article_detail' article.slug %}" 
-                               class="hover:text-brand-accent transition">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                            <a href="{% url 'articles:article_detail' article.slug %}" class="hover:text-brand-accent transition">
                                 {{ article.title }}
                             </a>
                         </h2>
-                        <p class="text-gray-600 text-sm leading-relaxed flex-grow mb-4">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed flex-grow mb-4">
                             {{ article.content|truncatewords:30|safe }}
                         </p>
-                        <!-- Мета-информация -->
-                        <div class="flex flex-wrap items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-3 mt-2">
+                        <div class="flex flex-wrap items-center justify-between text-xs text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-gray-700 pt-3 mt-2">
                             <div class="flex items-center gap-4">
-                                <!-- Дата -->
-                                <span class="flex items-center gap-1">
-                                    <i class="far fa-calendar-alt"></i> {{ article.published_date|date:"d E Y" }}
-                                </span>
-                                <!-- Комментарии -->
-                                <span class="flex items-center gap-1">
-                                    <i class="far fa-comment"></i> {{ article.comments.count }}
-                                </span>
-                                <!-- Лайки -->
-                                <span class="flex items-center gap-1">
-                                    <i class="far fa-heart"></i> {{ article.total_likes }}
-                                </span>
-                                <!-- Просмотры (если добавишь поле) -->
-                                {% if article.views %}
-                                    <span class="flex items-center gap-1">
-                                        <i class="far fa-eye"></i> {{ article.views }}
-                                    </span>
-                                {% endif %}
+                                <span class="flex items-center gap-1"><i class="far fa-calendar-alt"></i> {{ article.published_date|date:"d E Y" }}</span>
+                                <span class="flex items-center gap-1"><i class="far fa-comment"></i> {{ article.comments.count }}</span>
+                                <span class="flex items-center gap-1"><i class="far fa-heart"></i> {{ article.total_likes }}</span>
+                                {% if article.views %}<span class="flex items-center gap-1"><i class="far fa-eye"></i> {{ article.views }}</span>{% endif %}
                             </div>
-                            <div class="flex items-center gap-2">
-                                <!-- Кнопка "Избранное" (заглушка, можно реализовать через JS) -->
-                                <button class="text-gray-400 hover:text-red-500 transition text-sm" title="Добавить в избранное">
-                                    <i class="far fa-bookmark"></i>
-                                </button>
-                                <!-- Ссылка "Читать" -->
-                                <a href="{% url 'articles:article_detail' article.slug %}" 
-                                   class="inline-flex items-center text-sm font-medium text-brand-accent hover:underline">
-                                    Читать →
-                                </a>
-                            </div>
+                            <a href="{% url 'articles:article_detail' article.slug %}" class="inline-flex items-center text-sm font-medium text-brand-accent hover:underline">
+                                Читать →
+                            </a>
                         </div>
                     </div>
                 </article>
@@ -103,20 +76,20 @@
             <ul class="flex justify-center items-center gap-1 flex-wrap">
                 {% if page_obj.has_previous %}
                     <li>
-                        <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
-                           class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">
+                        <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                           class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 transition">
                             &laquo; Первая
                         </a>
                     </li>
                     <li>
-                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
-                           class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">
+                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                           class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 transition">
                             Назад
                         </a>
                     </li>
                 {% else %}
-                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed">&laquo; Первая</span></li>
-                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed">Назад</span></li>
+                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 cursor-not-allowed">&laquo; Первая</span></li>
+                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 cursor-not-allowed">Назад</span></li>
                 {% endif %}
 
                 {% for num in page_obj.paginator.page_range %}
@@ -125,8 +98,8 @@
                             <li><span class="px-4 py-2 rounded-md text-sm font-bold text-white bg-brand-accent border border-brand-accent">{{ num }}</span></li>
                         {% else %}
                             <li>
-                                <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
-                                   class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">
+                                <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                                   class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 transition">
                                     {{ num }}
                                 </a>
                             </li>
@@ -136,28 +109,28 @@
 
                 {% if page_obj.has_next %}
                     <li>
-                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
-                           class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">
+                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                           class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 transition">
                             Вперед
                         </a>
                     </li>
                     <li>
-                        <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
-                           class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition">
+                        <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                           class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 transition">
                             Последняя &raquo;
                         </a>
                     </li>
                 {% else %}
-                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed">Вперед</span></li>
-                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed">Последняя &raquo;</span></li>
+                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 cursor-not-allowed">Вперед</span></li>
+                    <li><span class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 cursor-not-allowed">Последняя &raquo;</span></li>
                 {% endif %}
             </ul>
         </nav>
         {% endif %}
 
     {% else %}
-        <div class="bg-blue-50 border border-blue-200 text-blue-700 px-6 py-4 rounded-lg">
-            По вашему запросу ничего не найдено. Попробуйте изменить условия поиска.
+        <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 px-6 py-4 rounded-lg">
+            {% if query %}По вашему запросу ничего не найдено. Попробуйте изменить условия поиска.{% else %}Пока нет статей. Загляните позже!{% endif %}
         </div>
     {% endif %}
 {% endblock %}

@@ -6,67 +6,57 @@
 {% block content %}
 <article class="max-w-4xl mx-auto">
     <header class="mb-8">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ article.title }}</h1>
-        <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">{{ article.title }}</h1>
+        <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
             {% if article.category %}
                 <span class="px-3 py-1 bg-brand-accent/10 text-brand-accent rounded-full font-medium">
                     {{ article.category.name }}
                 </span>
             {% endif %}
-            <span class="flex items-center gap-1">
-                <i class="far fa-calendar-alt"></i> {{ article.published_date|date:"d E Y" }}
-            </span>
-            <span class="flex items-center gap-1">
-                <i class="far fa-eye"></i> {{ article.views|default:0 }}
-            </span>
-            <span class="flex items-center gap-1">
-                <i class="far fa-heart"></i> <span id="likes-count">{{ total_likes }}</span>
-            </span>
-            <span class="flex items-center gap-1">
-                <i class="far fa-comment"></i> {{ comments|length }}
-            </span>
+            <span class="flex items-center gap-1"><i class="far fa-calendar-alt"></i> {{ article.published_date|date:"d E Y" }}</span>
+            <span class="flex items-center gap-1"><i class="far fa-eye"></i> {{ article.views|default:0 }}</span>
+            <span class="flex items-center gap-1"><i class="far fa-heart"></i> {{ total_likes }}</span>
+            <span class="flex items-center gap-1"><i class="far fa-comment"></i> {{ comments|length }}</span>
         </div>
     </header>
 
     {% if article.image %}
         <div class="mb-8">
-            <img src="{{ article.image.url }}" alt="{{ article.title }}" class="w-full rounded-2xl shadow-lg border border-gray-100">
+            <img src="{{ article.image.url }}" alt="{{ article.title }}" class="w-full rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
         </div>
     {% endif %}
 
-    <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed">
+    <div class="prose prose-lg max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
         {{ article.content|safe }}
     </div>
 
     <!-- Лайки и поделиться -->
-    <div class="flex flex-wrap items-center justify-between gap-4 py-6 border-t border-b border-gray-100 my-8">
+    <div class="flex flex-wrap items-center justify-between gap-4 py-6 border-t border-b border-gray-100 dark:border-gray-700 my-8">
         <div class="flex items-center gap-4">
-            <!-- AJAX-кнопка лайка -->
-            <button id="like-button" data-slug="{{ article.slug }}" 
-                    class="flex items-center gap-2 px-4 py-2 bg-brand-accent/10 text-brand-accent hover:bg-brand-accent hover:text-white rounded-lg transition text-sm font-medium">
-                <i class="fas fa-heart"></i> <span id="likes-count">{{ total_likes }}</span>
+            <button id="like-button" class="flex items-center gap-2 px-4 py-2 bg-brand-accent/10 text-brand-accent hover:bg-brand-accent hover:text-white rounded-lg transition text-sm font-medium">
+                <i class="fas fa-heart"></i> <span id="like-count-btn">{{ total_likes }}</span>
             </button>
-            <span class="text-sm text-gray-400">|</span>
-            <button class="text-sm text-gray-500 hover:text-brand-accent transition flex items-center gap-1" onclick="window.print()">
+            <span class="text-sm text-gray-400 dark:text-gray-500">|</span>
+            <button class="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-accent transition flex items-center gap-1" onclick="window.print()">
                 <i class="fas fa-print"></i> Печать
             </button>
         </div>
         <div class="flex items-center gap-2">
-            <span class="text-sm text-gray-500">Поделиться:</span>
-            <a href="https://vk.com/share.php?url={{ request.build_absolute_uri }}" target="_blank" class="text-gray-400 hover:text-blue-600 transition text-xl"><i class="fab fa-vk"></i></a>
-            <a href="https://t.me/share/url?url={{ request.build_absolute_uri }}&text={{ article.title }}" target="_blank" class="text-gray-400 hover:text-blue-400 transition text-xl"><i class="fab fa-telegram"></i></a>
-            <a href="https://api.whatsapp.com/send?text={{ article.title }}%20{{ request.build_absolute_uri }}" target="_blank" class="text-gray-400 hover:text-green-500 transition text-xl"><i class="fab fa-whatsapp"></i></a>
+            <span class="text-sm text-gray-500 dark:text-gray-400">Поделиться:</span>
+            <a href="https://vk.com/share.php?url={{ request.build_absolute_uri }}" target="_blank" class="text-gray-400 dark:text-gray-500 hover:text-blue-600 transition text-xl"><i class="fab fa-vk"></i></a>
+            <a href="https://t.me/share/url?url={{ request.build_absolute_uri }}&text={{ article.title }}" target="_blank" class="text-gray-400 dark:text-gray-500 hover:text-blue-400 transition text-xl"><i class="fab fa-telegram"></i></a>
+            <a href="https://api.whatsapp.com/send?text={{ article.title }}%20{{ request.build_absolute_uri }}" target="_blank" class="text-gray-400 dark:text-gray-500 hover:text-green-500 transition text-xl"><i class="fab fa-whatsapp"></i></a>
         </div>
     </div>
 
-    <!-- Секция комментариев -->
+    <!-- Комментарии -->
     <section class="mt-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-4">Комментарии ({{ comments|length }})</h2>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Комментарии ({{ comments|length }})</h2>
 
         {% if messages %}
             <div class="mb-4">
                 {% for message in messages %}
-                    <div class="px-4 py-2 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                    <div class="px-4 py-2 rounded-lg {% if message.tags == 'success' %}bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300{% else %}bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300{% endif %}">
                         {{ message }}
                     </div>
                 {% endfor %}
@@ -78,14 +68,14 @@
             {% if not user.is_authenticated %}
                 <div class="mb-3">
                     <input type="text" name="author_name" placeholder="Ваше имя" 
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-brand-accent outline-none">
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-brand-accent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
                 </div>
             {% else %}
                 <input type="hidden" name="author_name" value="{{ user.username }}">
             {% endif %}
             <div class="flex gap-3">
                 <input type="text" name="comment_text" placeholder="Напишите комментарий..." 
-                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-brand-accent outline-none">
+                       class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-brand-accent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
                 <button type="submit" class="px-4 py-2 bg-brand-accent text-white rounded-lg hover:bg-brand-dark transition text-sm font-medium">
                     Отправить
                 </button>
@@ -94,15 +84,15 @@
 
         <div class="space-y-4">
             {% for comment in comments %}
-                <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-100 dark:border-gray-700">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="font-semibold text-gray-800">{{ comment.author_name }}</span>
-                        <span class="text-xs text-gray-400">{{ comment.created_at|date:"d E Y H:i" }}</span>
+                        <span class="font-semibold text-gray-800 dark:text-gray-200">{{ comment.author_name }}</span>
+                        <span class="text-xs text-gray-400 dark:text-gray-500">{{ comment.created_at|date:"d E Y H:i" }}</span>
                     </div>
-                    <p class="text-gray-700">{{ comment.text }}</p>
+                    <p class="text-gray-700 dark:text-gray-300">{{ comment.text }}</p>
                 </div>
             {% empty %}
-                <p class="text-gray-400 text-sm">Пока нет комментариев. Будьте первым!</p>
+                <p class="text-gray-400 dark:text-gray-500 text-sm">Пока нет комментариев. Будьте первым!</p>
             {% endfor %}
         </div>
     </section>
@@ -114,46 +104,63 @@
     </div>
 </article>
 
-<!-- CSRF-токен для AJAX -->
-<input type="hidden" id="csrf-token" value="{{ csrf_token }}">
-
+<!-- AJAX лайка -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const likeButton = document.getElementById('like-button');
-    if (likeButton) {
-        likeButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            const slug = this.dataset.slug;
-            const csrfToken = document.getElementById('csrf-token').value;
-            
-            fetch(`/articles/like/${slug}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken,
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    document.getElementById('likes-count').textContent = data.total_likes;
-                    // Обновляем иконку (закрашиваем, если liked)
-                    const icon = likeButton.querySelector('i');
-                    if (data.liked) {
-                        icon.style.color = '#e53e3e'; // красный
-                    } else {
-                        icon.style.color = ''; // возвращаем стандартный
+    document.addEventListener('DOMContentLoaded', function() {
+        const likeButton = document.getElementById('like-button');
+        const likeCountBtn = document.getElementById('like-count-btn');
+
+        if (likeButton) {
+            likeButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        const cookies = document.cookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
                     }
+                    return cookieValue;
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Произошла ошибка при отправке запроса.');
+                const csrftoken = getCookie('csrftoken');
+                const url = "{% url 'articles:like_article' article.slug %}";
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'same-origin',
+                })
+                .then(response => {
+                    if (response.status === 401) {
+                        alert('Пожалуйста, войдите на сайт, чтобы поставить лайк.');
+                        return;
+                    }
+                    if (!response.ok) throw new Error('Ошибка');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.total_likes !== undefined) {
+                        likeCountBtn.textContent = data.total_likes;
+                        if (data.liked) {
+                            likeButton.classList.add('bg-brand-accent', 'text-white');
+                            likeButton.classList.remove('bg-brand-accent/10', 'text-brand-accent');
+                        } else {
+                            likeButton.classList.remove('bg-brand-accent', 'text-white');
+                            likeButton.classList.add('bg-brand-accent/10', 'text-brand-accent');
+                        }
+                    }
+                })
+                .catch(error => console.error('Ошибка:', error));
             });
-        });
-    }
-});
+        }
+    });
 </script>
 {% endblock %}
