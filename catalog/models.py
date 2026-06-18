@@ -1,9 +1,8 @@
 from django.db import models
 from django.urls import reverse
-from django.contrib.auth.models import User  # ДОБАВИТЬ - для лайков
+from django.contrib.auth.models import User
 
 class CoffeeOrigin(models.Model):
-    """Страна происхождения кофе"""
     name = models.CharField(max_length=100, verbose_name="Страна")
     slug = models.SlugField(unique=True)
 
@@ -16,7 +15,6 @@ class CoffeeOrigin(models.Model):
 
 
 class CoffeeSort(models.Model):
-    """Сорт/вид кофе (например, Эфиопия Иргачеффе)"""
     name = models.CharField(max_length=200, verbose_name="Название")
     slug = models.SlugField(unique=True)
     origin = models.ForeignKey(CoffeeOrigin, on_delete=models.CASCADE, verbose_name="Происхождение")
@@ -27,6 +25,9 @@ class CoffeeSort(models.Model):
     image = models.ImageField(upload_to='coffee/', blank=True, null=True, verbose_name="Изображение")
     is_active = models.BooleanField(default=True, verbose_name="Активно")
     created_at = models.DateTimeField(auto_now_add=True)
+
+    # ===== НОВОЕ ПОЛЕ =====
+    favorites = models.ManyToManyField(User, related_name='favorite_coffees', blank=True, verbose_name="В избранном у пользователей")
 
     class Meta:
         verbose_name = "Сорт кофе"

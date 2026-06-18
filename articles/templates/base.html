@@ -51,13 +51,37 @@
     <nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
+                <!-- Логотип -->
                 <a href="/" class="logo-text flex items-center gap-2">
                     <span class="text-2xl">☕</span> Brew Salvation
                 </a>
+
+                <!-- Правая часть: переключение темы, пользователь, админка -->
                 <div class="flex items-center gap-3">
+                    <!-- Кнопка переключения темы -->
                     <button id="theme-toggle" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-accent transition">
                         <i id="theme-icon" class="fas fa-moon"></i>
                     </button>
+
+                    <!-- Блок пользователя -->
+                    {% if user.is_authenticated %}
+                        <div class="relative group">
+                            <a href="{% url 'profile' %}" class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-accent dark:hover:text-brand-accent transition">
+                                <i class="fas fa-user-circle text-xl"></i>
+                                <span class="hidden sm:inline">{{ user.username }}</span>
+                            </a>
+                            <!-- Выпадающее меню -->
+                            <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition z-10">
+                                <a href="{% url 'profile' %}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">Профиль</a>
+                                <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">Выйти</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-accent transition">Войти</a>
+                        <a href="{% url 'register' %}" class="text-sm font-medium bg-brand-accent text-white px-3 py-1.5 rounded-lg hover:bg-brand-dark transition">Регистрация</a>
+                    {% endif %}
+
+                    <!-- Админка -->
                     <a href="/admin/" target="_blank" 
                        class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                         🔐 Админ
@@ -69,6 +93,7 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col md:flex-row gap-8">
+            <!-- Боковая панель -->
             <aside class="w-full md:w-64 lg:w-72 flex-shrink-0">
                 <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 sticky top-4">
                     <h5 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Темы</h5>
@@ -101,6 +126,8 @@
                     </div>
                 </div>
             </aside>
+
+            <!-- Основной контент -->
             <main class="flex-1 min-w-0">
                 {% block content %}
                 {% endblock %}
@@ -117,6 +144,7 @@
         </div>
     </footer>
 
+    <!-- Скрипт переключения темы -->
     <script>
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');

@@ -5,6 +5,7 @@
 
 {% block content %}
 <div class="flex flex-col lg:flex-row gap-8">
+    <!-- Левая колонка: изображение -->
     <div class="lg:w-1/2">
         {% if coffee.image %}
             <img src="{{ coffee.image.url }}" alt="{{ coffee.name }}" class="w-full rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
@@ -14,29 +15,84 @@
             </div>
         {% endif %}
     </div>
+
+    <!-- Правая колонка: информация -->
     <div class="lg:w-1/2 space-y-5">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ coffee.name }}</h1>
         <div class="flex flex-wrap items-center gap-2 text-sm">
-            <span class="px-3 py-1 bg-brand-accent/10 text-brand-accent rounded-full font-medium">{{ coffee.origin.name }}</span>
-            {% if coffee.processing %}<span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full">{{ coffee.processing }}</span>{% endif %}
+            <span class="px-3 py-1 bg-brand-accent/10 text-brand-accent rounded-full font-medium">
+                {{ coffee.origin.name }}
+            </span>
+            {% if coffee.processing %}
+                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full">
+                    {{ coffee.processing }}
+                </span>
+            {% endif %}
         </div>
         <div class="space-y-2 text-gray-700 dark:text-gray-300">
             <p><span class="font-semibold">Вкусовые ноты:</span> {{ coffee.tasting_notes }}</p>
             <p><span class="font-semibold">Обработка:</span> {{ coffee.processing|default:"не указано" }}</p>
-            {% if coffee.price %}<p class="text-2xl font-bold text-brand-accent">{{ coffee.price }} ₽ / кг</p>{% endif %}
+            {% if coffee.price %}
+                <p class="text-2xl font-bold text-brand-accent">{{ coffee.price }} ₽ / кг</p>
+            {% endif %}
         </div>
-        <div class="prose max-w-none text-gray-600 dark:text-gray-300 leading-relaxed">{{ coffee.description|linebreaks }}</div>
+        <div class="prose max-w-none text-gray-600 dark:text-gray-300 leading-relaxed">
+            {{ coffee.description|linebreaks }}
+        </div>
+
+        <!-- Кнопки действий -->
         <div class="flex flex-wrap gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
-            <a href="{% url 'catalog:coffee_list' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+            <a href="{% url 'catalog:coffee_list' %}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                 <i class="fas fa-arrow-left mr-2"></i> Назад в каталог
             </a>
+
+            <!-- ===== НОВАЯ КНОПКА "В ИЗБРАННОЕ" ===== -->
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'toggle_favorite' coffee.id %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" 
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                        {% if user in coffee.favorites.all %}
+                            <i class="fas fa-star text-yellow-500 mr-2"></i> В избранном
+                        {% else %}
+                            <i class="far fa-star mr-2"></i> В избранное
+                        {% endif %}
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <i class="far fa-star mr-2"></i> Войти, чтобы добавить в избранное
+                </a>
+            {% endif %}
+
             <button class="inline-flex items-center px-4 py-2 bg-brand-accent text-white rounded-lg hover:bg-brand-dark transition text-sm font-medium">
                 <i class="fas fa-shopping-cart mr-2"></i> Добавить в корзину
-            </button>
-            <button class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                <i class="far fa-heart"></i>
             </button>
         </div>
     </div>
 </div>
+
+<!-- Блок рекомендаций (другие сорта) -->
+{% if related_coffees %}
+    <div class="mt-12">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Вам также может понравиться</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for related in related_coffees|slice:":3" %}
+                <a href="{{ related.get_absolute_url }}" class="group">
+                    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md transition">
+                        {% if related.image %}
+                            <img src="{{ related.image.url }}" alt="{{ related.name }}" class="w-full h-40 object-cover">
+                        {% endif %}
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-900 dark:text-white group-hover:text-brand-accent transition">{{ related.name }}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ related.origin.name }}</p>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
 {% endblock %}
