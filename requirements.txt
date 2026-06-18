@@ -5,3 +5,4 @@ graphviz==0.21
 pillow==12.2.0
 pytailwindcss==0.3.0
 sqlparse==0.5.5
+django-tailwind-cli==4.6.2
